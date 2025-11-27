@@ -3,52 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Healthcare Assistant - Demo</title>
+    <title>AI Healthcare Assistant - Live Demo</title>
+    <meta name="description" content="AI-powered healthcare assistant with symptom analysis, wellness tips, and health calculators. Supports 7 languages.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --accent: #10b981;
+            --accent-dark: #059669;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #334155;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
             min-height: 100vh;
-            padding: 20px;
+            line-height: 1.6;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
 
+        /* Header */
         header {
             text-align: center;
-            padding: 30px 0;
-            color: white;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
         }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+
+        header > * { position: relative; z-index: 1; }
 
         .lang-selector {
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
         .lang-btn {
-            padding: 0.4rem 1rem;
-            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            background: rgba(255,255,255,0.15);
             border: 2px solid transparent;
-            border-radius: 20px;
+            border-radius: 25px;
             color: white;
             cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.3s;
         }
 
-        .lang-btn:hover { background: rgba(255,255,255,0.3); }
-        .lang-btn.active { background: white; color: #667eea; }
+        .lang-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+        .lang-btn.active { background: white; color: var(--primary); }
 
         header h1 {
             font-size: 2.5rem;
@@ -59,224 +89,195 @@
             gap: 15px;
         }
 
-        header p {
-            opacity: 0.9;
-            font-size: 1.1rem;
+        header h1 .icon { font-size: 3rem; }
+        header p { opacity: 0.9; font-size: 1.1rem; max-width: 600px; margin: 0 auto; }
+
+        /* Connection Status */
+        .connection-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: var(--bg-card);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
         }
 
-        .disclaimer-banner {
-            background: #fff3cd;
-            border: 1px solid #ffc107;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            color: #856404;
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 0.9rem;
         }
 
-        .disclaimer-banner strong {
-            display: block;
-            margin-bottom: 5px;
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
         }
 
+        .status-dot.connected { background: var(--accent); }
+        .status-dot.disconnected { background: var(--warning); }
+        .status-dot.error { background: var(--danger); }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .api-input-group {
+            display: flex;
+            gap: 10px;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .api-input {
+            flex: 1;
+            padding: 10px 15px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .api-input:focus { outline: none; border-color: var(--accent); }
+
+        .connect-btn {
+            padding: 10px 20px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .connect-btn:hover { background: var(--accent-dark); transform: translateY(-2px); }
+        .connect-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Disclaimer */
+        .disclaimer {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning);
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .disclaimer strong { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; color: var(--warning); }
+
+        /* Chat Container */
         .chat-container {
-            background: white;
+            background: var(--bg-card);
             border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
         .chat-header {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
             padding: 20px;
-            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .chat-header h2 {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .mode-badge {
+            padding: 5px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
         }
 
         .chat-messages {
             height: 450px;
             overflow-y: auto;
             padding: 20px;
-            background: #f8fafc;
+            background: var(--bg-dark);
         }
+
+        .chat-messages::-webkit-scrollbar { width: 6px; }
+        .chat-messages::-webkit-scrollbar-track { background: transparent; }
+        .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
         .message {
             margin-bottom: 15px;
-            animation: fadeIn 0.3s ease;
+            animation: slideIn 0.3s ease;
         }
 
-        @keyframes fadeIn {
+        @keyframes slideIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .message.user {
-            text-align: right;
-        }
+        .message.user { text-align: right; }
 
         .message-content {
             display: inline-block;
             padding: 12px 18px;
             border-radius: 18px;
-            max-width: 80%;
+            max-width: 85%;
             text-align: left;
-            line-height: 1.5;
         }
 
         .message.user .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             border-bottom-right-radius: 4px;
         }
 
         .message.bot .message-content {
-            background: white;
-            color: #333;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
             border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .message.bot .message-content h3 {
-            color: #10b981;
-            margin: 10px 0;
-            font-size: 1.1rem;
+            color: var(--accent);
+            margin: 10px 0 8px;
+            font-size: 1rem;
         }
 
         .message.bot .message-content ul {
-            margin: 10px 0 10px 20px;
+            margin: 8px 0 8px 20px;
         }
 
-        .message.bot .message-content li {
-            margin: 5px 0;
-        }
+        .message.bot .message-content li { margin: 4px 0; }
+
+        .message.bot .message-content p { margin: 8px 0; }
 
         .emergency-alert {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
-            color: white !important;
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%) !important;
+            border: none !important;
         }
 
-        .emergency-alert h3 {
-            color: white !important;
-        }
+        .emergency-alert h3 { color: white !important; }
 
-        .chat-input-container {
-            padding: 20px;
-            background: white;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .quick-actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .quick-btn {
-            padding: 8px 16px;
-            background: #f1f5f9;
-            border: 1px solid #e2e8f0;
-            border-radius: 20px;
-            cursor: pointer;
+        .info-box {
+            margin-top: 10px;
+            padding: 10px 12px;
+            border-radius: 8px;
             font-size: 0.85rem;
-            color: #475569;
-            transition: all 0.2s;
         }
 
-        .quick-btn:hover {
-            background: #e2e8f0;
-            border-color: #cbd5e1;
-        }
-
-        .quick-btn.symptom { border-left: 3px solid #ef4444; }
-        .quick-btn.wellness { border-left: 3px solid #10b981; }
-        .quick-btn.calculator { border-left: 3px solid #3b82f6; }
-        .quick-btn.condition { border-left: 3px solid #f59e0b; }
-
-        .input-wrapper {
-            display: flex;
-            gap: 10px;
-        }
-
-        #messageInput {
-            flex: 1;
-            padding: 15px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        #messageInput:focus {
-            border-color: #10b981;
-        }
-
-        #sendBtn {
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        #sendBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .feature-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-
-        .feature-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .feature-card h3 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .feature-card p {
-            color: #666;
-            font-size: 0.9rem;
-            line-height: 1.5;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px;
-            color: white;
-            opacity: 0.9;
-        }
-
-        footer a {
-            color: white;
-            text-decoration: underline;
-        }
+        .info-box.warning { background: rgba(245, 158, 11, 0.15); border-left: 3px solid var(--warning); }
+        .info-box.info { background: rgba(59, 130, 246, 0.15); border-left: 3px solid var(--info); }
+        .info-box.success { background: rgba(16, 185, 129, 0.15); border-left: 3px solid var(--accent); }
 
         .typing-indicator {
             display: flex;
@@ -287,7 +288,7 @@
         .typing-indicator span {
             width: 8px;
             height: 8px;
-            background: #10b981;
+            background: var(--accent);
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out;
         }
@@ -300,37 +301,163 @@
             0%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
         }
+
+        /* Chat Input */
+        .chat-input-container {
+            padding: 20px;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+
+        .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .quick-btn {
+            padding: 8px 14px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+
+        .quick-btn:hover {
+            background: var(--border);
+            color: var(--text-primary);
+            transform: translateY(-2px);
+        }
+
+        .quick-btn.symptom { border-left: 3px solid var(--danger); }
+        .quick-btn.wellness { border-left: 3px solid var(--accent); }
+        .quick-btn.calculator { border-left: 3px solid var(--info); }
+        .quick-btn.condition { border-left: 3px solid var(--warning); }
+
+        .input-wrapper {
+            display: flex;
+            gap: 10px;
+        }
+
+        #messageInput {
+            flex: 1;
+            padding: 15px 20px;
+            background: var(--bg-dark);
+            border: 2px solid var(--border);
+            border-radius: 25px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        #messageInput:focus { outline: none; border-color: var(--accent); }
+        #messageInput::placeholder { color: var(--text-secondary); }
+
+        #sendBtn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #sendBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4); }
+        #sendBtn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Features */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+        }
+
+        .feature-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+
+        .feature-icon { font-size: 2.5rem; margin-bottom: 15px; }
+        .feature-card h3 { color: var(--text-primary); margin-bottom: 10px; font-size: 1.1rem; }
+        .feature-card p { color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        footer a { color: var(--accent); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header h1 { font-size: 1.8rem; }
+            .chat-messages { height: 350px; }
+            .api-input-group { min-width: 100%; }
+            .connection-bar { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <div class="lang-selector">
-                <button class="lang-btn active" onclick="setLanguage('en')">EN</button>
-                <button class="lang-btn" onclick="setLanguage('ko')">KO</button>
-                <button class="lang-btn" onclick="setLanguage('ja')">JA</button>
+                <button class="lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
+                <button class="lang-btn" data-lang="ko" onclick="setLanguage('ko')">KO</button>
+                <button class="lang-btn" data-lang="ja" onclick="setLanguage('ja')">JA</button>
+                <button class="lang-btn" data-lang="zh" onclick="setLanguage('zh')">ZH</button>
+                <button class="lang-btn" data-lang="es" onclick="setLanguage('es')">ES</button>
+                <button class="lang-btn" data-lang="fr" onclick="setLanguage('fr')">FR</button>
+                <button class="lang-btn" data-lang="de" onclick="setLanguage('de')">DE</button>
             </div>
-            <h1 id="title">AI Healthcare Assistant</h1>
+            <h1><span class="icon">🏥</span><span id="title">AI Healthcare Assistant</span></h1>
             <p id="subtitle">Your intelligent health information companion powered by LangChain</p>
         </header>
 
-        <div class="disclaimer-banner">
-            <strong id="disclaimer-title"></strong>
-            <span id="disclaimer-text"></span>
+        <div class="connection-bar">
+            <div class="status-indicator">
+                <span class="status-dot disconnected" id="statusDot"></span>
+                <span id="statusText">Simulation Mode</span>
+            </div>
+            <div class="api-input-group">
+                <input type="text" class="api-input" id="apiUrl" placeholder="http://localhost:5000">
+                <button class="connect-btn" id="connectBtn" onclick="connectToAPI()">Connect</button>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <strong><span>⚠️</span> <span id="disclaimerTitle">Important Disclaimer</span></strong>
+            <span id="disclaimerText">This is a demonstration only. The information provided is for educational purposes and is NOT a substitute for professional medical advice, diagnosis, or treatment.</span>
         </div>
 
         <div class="chat-container">
             <div class="chat-header">
-                <h2 id="chat-title"></h2>
+                <h2><span>💬</span> <span id="chatTitle">Health Information Chat</span></h2>
+                <span class="mode-badge" id="modeBadge">Simulation</span>
             </div>
-
             <div class="chat-messages" id="chatMessages"></div>
-
             <div class="chat-input-container">
-                <div class="quick-actions" id="quick-actions"></div>
+                <div class="quick-actions" id="quickActions"></div>
                 <div class="input-wrapper">
                     <input type="text" id="messageInput" onkeypress="handleKeyPress(event)">
-                    <button id="sendBtn" onclick="sendMessage()"></button>
+                    <button id="sendBtn" onclick="sendMessage()">Send</button>
                 </div>
             </div>
         </div>
@@ -338,56 +465,75 @@
         <div class="features">
             <div class="feature-card">
                 <div class="feature-icon">🩺</div>
-                <h3 id="feature1-title"></h3>
-                <p id="feature1-desc"></p>
+                <h3 id="feature1Title">Symptom Information</h3>
+                <p id="feature1Desc">Get general information about common symptoms and when to see a doctor.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📊</div>
-                <h3 id="feature2-title"></h3>
-                <p id="feature2-desc"></p>
+                <h3 id="feature2Title">Health Calculators</h3>
+                <p id="feature2Desc">Calculate BMI, water intake, and get lifestyle assessments.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🌿</div>
-                <h3 id="feature3-title"></h3>
-                <p id="feature3-desc"></p>
+                <h3 id="feature3Title">Wellness Tips</h3>
+                <p id="feature3Desc">Discover tips for nutrition, exercise, sleep, and mental health.</p>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🚨</div>
-                <h3 id="feature4-title"></h3>
-                <p id="feature4-desc"></p>
+                <h3 id="feature4Title">Emergency Guidance</h3>
+                <p id="feature4Desc">Recognizes emergencies and advises calling emergency services.</p>
             </div>
         </div>
 
         <footer>
-            <p id="footer-text"></p>
-            <p id="footer-demo" style="margin-top: 10px; font-size: 0.85rem;"></p>
+            <p id="footerText">Built with LangChain & Flask | <a href="https://github.com/yoon-k/langchain-healthcare-assistant">View on GitHub</a></p>
+            <p id="footerDemo" style="margin-top: 10px; opacity: 0.7;">Connect your backend server to enable live AI responses</p>
         </footer>
     </div>
 
     <script>
-        let currentLang = 'en';
+        // State
+        let currentLang = localStorage.getItem('healthcare-lang') || 'en';
+        let isConnected = false;
+        let apiBaseUrl = localStorage.getItem('healthcare-api') || '';
+        let sessionId = 'session_' + Date.now();
+
+        // DOM Elements
         const chatMessages = document.getElementById('chatMessages');
         const messageInput = document.getElementById('messageInput');
+        const apiUrlInput = document.getElementById('apiUrl');
+        const statusDot = document.getElementById('statusDot');
+        const statusText = document.getElementById('statusText');
+        const modeBadge = document.getElementById('modeBadge');
+        const connectBtn = document.getElementById('connectBtn');
 
+        // i18n translations
         const i18n = {
             en: {
                 title: "AI Healthcare Assistant",
                 subtitle: "Your intelligent health information companion powered by LangChain",
-                disclaimerTitle: "⚠️ Important Disclaimer",
-                disclaimerText: "This is a demonstration only. The information provided is for educational purposes and is NOT a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider for medical concerns.",
-                chatTitle: "💬 Health Information Chat",
+                disclaimerTitle: "Important Disclaimer",
+                disclaimerText: "This is a demonstration only. The information provided is for educational purposes and is NOT a substitute for professional medical advice, diagnosis, or treatment.",
+                chatTitle: "Health Information Chat",
                 placeholder: "Ask about symptoms, conditions, or wellness tips...",
                 send: "Send",
+                connect: "Connect",
+                disconnect: "Disconnect",
+                connecting: "Connecting...",
+                connected: "Connected to API",
+                disconnected: "Simulation Mode",
+                simulation: "Simulation",
+                live: "Live API",
                 feature1Title: "Symptom Information",
-                feature1Desc: "Get general information about common symptoms, potential causes, and when to see a doctor.",
+                feature1Desc: "Get general information about common symptoms and when to see a doctor.",
                 feature2Title: "Health Calculators",
-                feature2Desc: "Calculate BMI, recommended water intake, and get general lifestyle assessments.",
+                feature2Desc: "Calculate BMI, water intake, and get lifestyle assessments.",
                 feature3Title: "Wellness Tips",
-                feature3Desc: "Discover tips for nutrition, exercise, sleep, mental health, and preventive care.",
+                feature3Desc: "Discover tips for nutrition, exercise, sleep, and mental health.",
                 feature4Title: "Emergency Guidance",
-                feature4Desc: "Recognizes emergency situations and immediately advises calling emergency services.",
-                footerText: "Built with LangChain & Flask | <a href=\"https://github.com/yoon-k/langchain-healthcare-assistant\">View on GitHub</a>",
-                footerDemo: "This is a demonstration project. Not for actual medical use.",
+                feature4Desc: "Recognizes emergencies and advises calling emergency services.",
+                footerText: "Built with LangChain & Flask | <a href='https://github.com/yoon-k/langchain-healthcare-assistant'>View on GitHub</a>",
+                footerDemo: "Connect your backend server to enable live AI responses",
                 quickButtons: [
                     { text: "🤕 Headache", msg: "I have a headache", class: "symptom" },
                     { text: "😴 Fatigue", msg: "I feel very tired lately", class: "symptom" },
@@ -401,733 +547,330 @@
             ko: {
                 title: "AI 헬스케어 어시스턴트",
                 subtitle: "LangChain으로 구동되는 지능형 건강 정보 도우미",
-                disclaimerTitle: "⚠️ 중요 면책조항",
-                disclaimerText: "이것은 데모용입니다. 제공되는 정보는 교육 목적이며 전문적인 의료 조언, 진단 또는 치료를 대체하지 않습니다. 의료 문제가 있으면 항상 자격을 갖춘 의료 제공자와 상담하세요.",
-                chatTitle: "💬 건강 정보 채팅",
+                disclaimerTitle: "중요 면책조항",
+                disclaimerText: "이것은 데모용입니다. 제공되는 정보는 교육 목적이며 전문적인 의료 조언, 진단 또는 치료를 대체하지 않습니다.",
+                chatTitle: "건강 정보 채팅",
                 placeholder: "증상, 질환 또는 건강 팁에 대해 질문하세요...",
                 send: "전송",
+                connect: "연결",
+                disconnect: "연결 해제",
+                connecting: "연결 중...",
+                connected: "API 연결됨",
+                disconnected: "시뮬레이션 모드",
+                simulation: "시뮬레이션",
+                live: "라이브 API",
                 feature1Title: "증상 정보",
-                feature1Desc: "일반적인 증상, 잠재적 원인 및 의사를 만나야 할 시기에 대한 일반 정보를 얻으세요.",
+                feature1Desc: "일반적인 증상과 의사를 만나야 할 시기에 대한 정보를 얻으세요.",
                 feature2Title: "건강 계산기",
-                feature2Desc: "BMI, 권장 수분 섭취량을 계산하고 일반적인 라이프스타일 평가를 받으세요.",
+                feature2Desc: "BMI, 수분 섭취량을 계산하고 라이프스타일 평가를 받으세요.",
                 feature3Title: "웰니스 팁",
-                feature3Desc: "영양, 운동, 수면, 정신 건강 및 예방 관리에 대한 팁을 알아보세요.",
+                feature3Desc: "영양, 운동, 수면, 정신 건강에 대한 팁을 알아보세요.",
                 feature4Title: "응급 안내",
-                feature4Desc: "응급 상황을 인식하고 즉시 응급 서비스 연락을 권장합니다.",
-                footerText: "LangChain & Flask로 제작 | <a href=\"https://github.com/yoon-k/langchain-healthcare-assistant\">GitHub에서 보기</a>",
-                footerDemo: "이것은 데모 프로젝트입니다. 실제 의료용이 아닙니다.",
+                feature4Desc: "응급 상황을 인식하고 응급 서비스 연락을 권장합니다.",
+                footerText: "LangChain & Flask로 제작 | <a href='https://github.com/yoon-k/langchain-healthcare-assistant'>GitHub에서 보기</a>",
+                footerDemo: "백엔드 서버를 연결하여 실시간 AI 응답을 활성화하세요",
                 quickButtons: [
                     { text: "🤕 두통", msg: "두통이 있어요", class: "symptom" },
                     { text: "😴 피로", msg: "요즘 많이 피곤해요", class: "symptom" },
                     { text: "🤧 감기", msg: "감기에 대해 알려주세요", class: "condition" },
                     { text: "🥗 영양 팁", msg: "영양 팁을 알려주세요", class: "wellness" },
                     { text: "😴 수면 팁", msg: "어떻게 하면 잠을 더 잘 잘 수 있나요?", class: "wellness" },
-                    { text: "⚖️ BMI 계산기", msg: "BMI를 계산해주세요", class: "calculator" },
+                    { text: "⚖️ BMI 계산", msg: "BMI를 계산해주세요", class: "calculator" },
                     { text: "💧 수분 섭취", msg: "물을 얼마나 마셔야 하나요?", class: "calculator" }
                 ]
             },
             ja: {
                 title: "AIヘルスケアアシスタント",
                 subtitle: "LangChainで動作するインテリジェントな健康情報コンパニオン",
-                disclaimerTitle: "⚠️ 重要な免責事項",
-                disclaimerText: "これはデモンストレーションのみです。提供される情報は教育目的であり、専門的な医療アドバイス、診断、または治療の代替ではありません。医療上の懸念がある場合は、常に資格のある医療提供者に相談してください。",
-                chatTitle: "💬 健康情報チャット",
+                disclaimerTitle: "重要な免責事項",
+                disclaimerText: "これはデモンストレーションのみです。提供される情報は教育目的であり、専門的な医療アドバイスの代替ではありません。",
+                chatTitle: "健康情報チャット",
                 placeholder: "症状、状態、または健康のヒントについて質問してください...",
                 send: "送信",
+                connect: "接続",
+                disconnect: "切断",
+                connecting: "接続中...",
+                connected: "API接続済み",
+                disconnected: "シミュレーションモード",
+                simulation: "シミュレーション",
+                live: "ライブAPI",
                 feature1Title: "症状情報",
-                feature1Desc: "一般的な症状、潜在的な原因、および医師に診てもらうべき時期についての一般情報を取得します。",
+                feature1Desc: "一般的な症状と医師に相談すべき時期についての情報を取得します。",
                 feature2Title: "健康計算機",
-                feature2Desc: "BMI、推奨水分摂取量を計算し、一般的なライフスタイル評価を取得します。",
+                feature2Desc: "BMI、水分摂取量を計算し、ライフスタイル評価を取得します。",
                 feature3Title: "ウェルネスのヒント",
-                feature3Desc: "栄養、運動、睡眠、メンタルヘルス、予防ケアに関するヒントを発見してください。",
+                feature3Desc: "栄養、運動、睡眠、メンタルヘルスに関するヒントを発見してください。",
                 feature4Title: "緊急ガイダンス",
-                feature4Desc: "緊急事態を認識し、すぐに緊急サービスへの連絡を勧めます。",
-                footerText: "LangChain & Flaskで構築 | <a href=\"https://github.com/yoon-k/langchain-healthcare-assistant\">GitHubで見る</a>",
-                footerDemo: "これはデモンストレーションプロジェクトです。実際の医療用ではありません。",
+                feature4Desc: "緊急事態を認識し、緊急サービスへの連絡を勧めます。",
+                footerText: "LangChain & Flaskで構築 | <a href='https://github.com/yoon-k/langchain-healthcare-assistant'>GitHubで見る</a>",
+                footerDemo: "バックエンドサーバーを接続してライブAI応答を有効にしてください",
                 quickButtons: [
                     { text: "🤕 頭痛", msg: "頭痛がします", class: "symptom" },
                     { text: "😴 疲労", msg: "最近とても疲れています", class: "symptom" },
                     { text: "🤧 風邪", msg: "風邪について教えてください", class: "condition" },
                     { text: "🥗 栄養のヒント", msg: "栄養のヒントを教えてください", class: "wellness" },
-                    { text: "😴 睡眠のヒント", msg: "どうすれば睡眠の質を上げられますか？", class: "wellness" },
-                    { text: "⚖️ BMI計算機", msg: "BMIを計算してください", class: "calculator" },
+                    { text: "😴 睡眠のヒント", msg: "睡眠の質を上げるには？", class: "wellness" },
+                    { text: "⚖️ BMI計算", msg: "BMIを計算してください", class: "calculator" },
                     { text: "💧 水分補給", msg: "どのくらいの水を飲むべきですか？", class: "calculator" }
+                ]
+            },
+            zh: {
+                title: "AI医疗助手",
+                subtitle: "由LangChain驱动的智能健康信息伴侣",
+                disclaimerTitle: "重要免责声明",
+                disclaimerText: "这仅是演示。提供的信息仅供教育目的，不能替代专业医疗建议、诊断或治疗。",
+                chatTitle: "健康信息聊天",
+                placeholder: "询问症状、病情或健康提示...",
+                send: "发送",
+                connect: "连接",
+                disconnect: "断开",
+                connecting: "连接中...",
+                connected: "已连接API",
+                disconnected: "模拟模式",
+                simulation: "模拟",
+                live: "实时API",
+                feature1Title: "症状信息",
+                feature1Desc: "获取常见症状和何时看医生的一般信息。",
+                feature2Title: "健康计算器",
+                feature2Desc: "计算BMI、饮水量并获取生活方式评估。",
+                feature3Title: "健康提示",
+                feature3Desc: "发现营养、运动、睡眠和心理健康的提示。",
+                feature4Title: "紧急指导",
+                feature4Desc: "识别紧急情况并建议拨打急救电话。",
+                footerText: "使用LangChain和Flask构建 | <a href='https://github.com/yoon-k/langchain-healthcare-assistant'>在GitHub上查看</a>",
+                footerDemo: "连接您的后端服务器以启用实时AI响应",
+                quickButtons: [
+                    { text: "🤕 头痛", msg: "我头痛", class: "symptom" },
+                    { text: "😴 疲劳", msg: "我最近很累", class: "symptom" },
+                    { text: "🤧 感冒", msg: "告诉我关于感冒的信息", class: "condition" },
+                    { text: "🥗 营养建议", msg: "给我一些营养建议", class: "wellness" },
+                    { text: "😴 睡眠建议", msg: "如何改善睡眠？", class: "wellness" },
+                    { text: "⚖️ BMI计算", msg: "计算我的BMI", class: "calculator" },
+                    { text: "💧 饮水量", msg: "我应该喝多少水？", class: "calculator" }
+                ]
+            },
+            es: {
+                title: "Asistente de Salud IA",
+                subtitle: "Tu compañero inteligente de información de salud impulsado por LangChain",
+                disclaimerTitle: "Aviso Importante",
+                disclaimerText: "Esto es solo una demostración. La información proporcionada es solo para fines educativos y NO sustituye el consejo médico profesional.",
+                chatTitle: "Chat de Información de Salud",
+                placeholder: "Pregunta sobre síntomas, condiciones o consejos de bienestar...",
+                send: "Enviar",
+                connect: "Conectar",
+                disconnect: "Desconectar",
+                connecting: "Conectando...",
+                connected: "API Conectada",
+                disconnected: "Modo Simulación",
+                simulation: "Simulación",
+                live: "API en Vivo",
+                feature1Title: "Información de Síntomas",
+                feature1Desc: "Obtén información general sobre síntomas comunes y cuándo ver al médico.",
+                feature2Title: "Calculadoras de Salud",
+                feature2Desc: "Calcula IMC, ingesta de agua y obtén evaluaciones de estilo de vida.",
+                feature3Title: "Consejos de Bienestar",
+                feature3Desc: "Descubre consejos de nutrición, ejercicio, sueño y salud mental.",
+                feature4Title: "Guía de Emergencia",
+                feature4Desc: "Reconoce emergencias y aconseja llamar a servicios de emergencia.",
+                footerText: "Construido con LangChain y Flask | <a href='https://github.com/yoon-k/langchain-healthcare-assistant'>Ver en GitHub</a>",
+                footerDemo: "Conecta tu servidor backend para habilitar respuestas de IA en vivo",
+                quickButtons: [
+                    { text: "🤕 Dolor de cabeza", msg: "Tengo dolor de cabeza", class: "symptom" },
+                    { text: "😴 Fatiga", msg: "Me siento muy cansado últimamente", class: "symptom" },
+                    { text: "🤧 Resfriado", msg: "Cuéntame sobre el resfriado común", class: "condition" },
+                    { text: "🥗 Consejos nutricionales", msg: "Dame consejos de nutrición", class: "wellness" },
+                    { text: "😴 Consejos de sueño", msg: "¿Cómo puedo dormir mejor?", class: "wellness" },
+                    { text: "⚖️ Calculadora IMC", msg: "Calcula mi IMC", class: "calculator" },
+                    { text: "💧 Hidratación", msg: "¿Cuánta agua debo beber?", class: "calculator" }
+                ]
+            },
+            fr: {
+                title: "Assistant Santé IA",
+                subtitle: "Votre compagnon intelligent d'informations santé propulsé par LangChain",
+                disclaimerTitle: "Avertissement Important",
+                disclaimerText: "Ceci est une démonstration uniquement. Les informations fournies sont à des fins éducatives et NE remplacent PAS un avis médical professionnel.",
+                chatTitle: "Chat Informations Santé",
+                placeholder: "Posez des questions sur les symptômes, conditions ou conseils bien-être...",
+                send: "Envoyer",
+                connect: "Connecter",
+                disconnect: "Déconnecter",
+                connecting: "Connexion...",
+                connected: "API Connectée",
+                disconnected: "Mode Simulation",
+                simulation: "Simulation",
+                live: "API en Direct",
+                feature1Title: "Informations Symptômes",
+                feature1Desc: "Obtenez des informations sur les symptômes courants et quand consulter.",
+                feature2Title: "Calculateurs Santé",
+                feature2Desc: "Calculez IMC, apport en eau et obtenez des évaluations de style de vie.",
+                feature3Title: "Conseils Bien-être",
+                feature3Desc: "Découvrez des conseils nutrition, exercice, sommeil et santé mentale.",
+                feature4Title: "Guide d'Urgence",
+                feature4Desc: "Reconnaît les urgences et conseille d'appeler les services d'urgence.",
+                footerText: "Construit avec LangChain et Flask | <a href='https://github.com/yoon-k/langchain-healthcare-assistant'>Voir sur GitHub</a>",
+                footerDemo: "Connectez votre serveur backend pour activer les réponses IA en direct",
+                quickButtons: [
+                    { text: "🤕 Mal de tête", msg: "J'ai mal à la tête", class: "symptom" },
+                    { text: "😴 Fatigue", msg: "Je me sens très fatigué dernièrement", class: "symptom" },
+                    { text: "🤧 Rhume", msg: "Parlez-moi du rhume", class: "condition" },
+                    { text: "🥗 Conseils nutrition", msg: "Donnez-moi des conseils nutritionnels", class: "wellness" },
+                    { text: "😴 Conseils sommeil", msg: "Comment mieux dormir?", class: "wellness" },
+                    { text: "⚖️ Calculateur IMC", msg: "Calculez mon IMC", class: "calculator" },
+                    { text: "💧 Hydratation", msg: "Combien d'eau dois-je boire?", class: "calculator" }
+                ]
+            },
+            de: {
+                title: "KI Gesundheitsassistent",
+                subtitle: "Ihr intelligenter Gesundheitsinformationsbegleiter powered by LangChain",
+                disclaimerTitle: "Wichtiger Hinweis",
+                disclaimerText: "Dies ist nur eine Demonstration. Die bereitgestellten Informationen dienen Bildungszwecken und ersetzen KEINE professionelle medizinische Beratung.",
+                chatTitle: "Gesundheitsinformations-Chat",
+                placeholder: "Fragen Sie nach Symptomen, Erkrankungen oder Wellness-Tipps...",
+                send: "Senden",
+                connect: "Verbinden",
+                disconnect: "Trennen",
+                connecting: "Verbinde...",
+                connected: "API verbunden",
+                disconnected: "Simulationsmodus",
+                simulation: "Simulation",
+                live: "Live API",
+                feature1Title: "Symptominformationen",
+                feature1Desc: "Erhalten Sie allgemeine Informationen über häufige Symptome und wann Sie einen Arzt aufsuchen sollten.",
+                feature2Title: "Gesundheitsrechner",
+                feature2Desc: "Berechnen Sie BMI, Wasseraufnahme und erhalten Sie Lifestyle-Bewertungen.",
+                feature3Title: "Wellness-Tipps",
+                feature3Desc: "Entdecken Sie Tipps zu Ernährung, Bewegung, Schlaf und psychischer Gesundheit.",
+                feature4Title: "Notfall-Leitfaden",
+                feature4Desc: "Erkennt Notfälle und empfiehlt den Anruf bei Notdiensten.",
+                footerText: "Erstellt mit LangChain & Flask | <a href='https://github.com/yoon-k/langchain-healthcare-assistant'>Auf GitHub ansehen</a>",
+                footerDemo: "Verbinden Sie Ihren Backend-Server für Live-KI-Antworten",
+                quickButtons: [
+                    { text: "🤕 Kopfschmerzen", msg: "Ich habe Kopfschmerzen", class: "symptom" },
+                    { text: "😴 Müdigkeit", msg: "Ich fühle mich sehr müde", class: "symptom" },
+                    { text: "🤧 Erkältung", msg: "Erzählen Sie mir über Erkältung", class: "condition" },
+                    { text: "🥗 Ernährungstipps", msg: "Geben Sie mir Ernährungstipps", class: "wellness" },
+                    { text: "😴 Schlaftipps", msg: "Wie kann ich besser schlafen?", class: "wellness" },
+                    { text: "⚖️ BMI-Rechner", msg: "Berechne meinen BMI", class: "calculator" },
+                    { text: "💧 Flüssigkeit", msg: "Wie viel Wasser sollte ich trinken?", class: "calculator" }
                 ]
             }
         };
 
-        const responses = {
+        // Simulated responses for demo mode
+        const simulatedResponses = {
             en: {
-                welcome: `<h3>👋 Welcome!</h3>
-                    <p>I'm your AI health information assistant. I can help with:</p>
-                    <ul>
-                        <li>General symptom information</li>
-                        <li>Health condition overviews</li>
-                        <li>Wellness and lifestyle tips</li>
-                        <li>BMI and hydration calculations</li>
-                        <li>General health risk assessment</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
-                        <strong>Remember:</strong> For medical advice, always consult a healthcare professional.
-                    </p>`,
-                headache: `<h3>🤕 Headache Information</h3>
-                    <p><strong>Description:</strong> Pain or discomfort in the head, scalp, or neck area.</p>
-                    <p><strong>Common Causes:</strong></p>
-                    <ul>
-                        <li>Tension and stress</li>
-                        <li>Dehydration</li>
-                        <li>Lack of sleep</li>
-                        <li>Eye strain</li>
-                        <li>Sinus congestion</li>
-                    </ul>
-                    <p><strong>General Home Care:</strong></p>
-                    <ul>
-                        <li>Rest in a quiet, dark room</li>
-                        <li>Stay hydrated</li>
-                        <li>Apply cold or warm compress</li>
-                        <li>Practice relaxation techniques</li>
-                    </ul>
-                    <p><strong>When to See a Doctor:</strong></p>
-                    <ul>
-                        <li>Severe or sudden onset</li>
-                        <li>Headache with fever or stiff neck</li>
-                        <li>After head injury</li>
-                        <li>With vision changes</li>
-                    </ul>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>Disclaimer:</strong> This is general information only. Consult a healthcare provider for personalized advice.
-                    </p>`,
-                fatigue: `<h3>😴 Fatigue Information</h3>
-                    <p><strong>Description:</strong> A feeling of tiredness, exhaustion, or lack of energy.</p>
-                    <p><strong>Common Causes:</strong></p>
-                    <ul>
-                        <li>Poor sleep quality</li>
-                        <li>Stress and anxiety</li>
-                        <li>Poor nutrition</li>
-                        <li>Sedentary lifestyle</li>
-                        <li>Dehydration</li>
-                    </ul>
-                    <p><strong>General Tips:</strong></p>
-                    <ul>
-                        <li>Establish regular sleep schedule</li>
-                        <li>Exercise regularly</li>
-                        <li>Eat balanced meals</li>
-                        <li>Stay hydrated</li>
-                        <li>Limit caffeine and alcohol</li>
-                    </ul>
-                    <p><strong>When to See a Doctor:</strong></p>
-                    <ul>
-                        <li>Fatigue lasting more than 2 weeks</li>
-                        <li>With unexplained weight loss</li>
-                        <li>With shortness of breath</li>
-                    </ul>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>Disclaimer:</strong> This is general information only. Consult a healthcare provider for personalized advice.
-                    </p>`,
-                cold: `<h3>🤧 Common Cold</h3>
-                    <p><strong>Overview:</strong> A viral infection of the upper respiratory tract.</p>
-                    <p><strong>Common Symptoms:</strong></p>
-                    <ul>
-                        <li>Runny nose</li>
-                        <li>Sneezing</li>
-                        <li>Sore throat</li>
-                        <li>Cough</li>
-                        <li>Mild body aches</li>
-                        <li>Low-grade fever</li>
-                    </ul>
-                    <p><strong>Prevention:</strong></p>
-                    <ul>
-                        <li>Wash hands frequently</li>
-                        <li>Avoid touching face</li>
-                        <li>Stay away from sick people</li>
-                        <li>Get adequate sleep</li>
-                    </ul>
-                    <p><strong>General Care:</strong> Rest, fluids, and symptom management. Most colds resolve in 7-10 days.</p>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>Disclaimer:</strong> This is general information only. Consult a healthcare provider if symptoms persist or worsen.
-                    </p>`,
-                nutrition: `<h3>🥗 Healthy Eating Basics</h3>
-                    <p>Fundamental principles for a balanced diet:</p>
-                    <ul>
-                        <li>Eat a variety of colorful fruits and vegetables daily</li>
-                        <li>Choose whole grains over refined grains</li>
-                        <li>Include lean proteins in your meals</li>
-                        <li>Stay hydrated - aim for 8 glasses of water daily</li>
-                        <li>Limit processed foods and added sugars</li>
-                        <li>Practice portion control</li>
-                        <li>Don't skip breakfast</li>
-                        <li>Plan and prepare meals ahead of time</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #10b981;">
-                        💚 Remember: Small, consistent changes lead to lasting improvements!
-                    </p>`,
-                sleep: `<h3>😴 Better Sleep Habits</h3>
-                    <p>Tips for improving sleep quality:</p>
-                    <ul>
-                        <li>Maintain consistent sleep and wake times</li>
-                        <li>Create a relaxing bedtime routine</li>
-                        <li>Keep bedroom cool, dark, and quiet</li>
-                        <li>Avoid screens 1 hour before bed</li>
-                        <li>Limit caffeine after noon</li>
-                        <li>Avoid large meals close to bedtime</li>
-                        <li>Exercise regularly but not too close to bedtime</li>
-                        <li>Manage stress with relaxation techniques</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #10b981;">
-                        💤 Quality sleep is essential for overall health and well-being!
-                    </p>`,
-                bmi: `<h3>⚖️ BMI Calculator</h3>
-                    <p><strong>Body Mass Index (BMI)</strong> is a screening tool that can indicate whether a person has a healthy body weight.</p>
-                    <p><strong>BMI Categories:</strong></p>
-                    <ul>
-                        <li>Under 18.5: Underweight</li>
-                        <li>18.5 - 24.9: Normal weight</li>
-                        <li>25 - 29.9: Overweight</li>
-                        <li>30 and above: Obese</li>
-                    </ul>
-                    <p><strong>To calculate:</strong> Provide your weight (kg) and height (cm).</p>
-                    <p>Example: "Calculate BMI for 70 kg and 175 cm"</p>
-                    <p style="margin-top: 15px; padding: 10px; background: #e0f2fe; border-radius: 8px; font-size: 0.85rem;">
-                        ℹ️ <strong>Note:</strong> BMI doesn't directly measure body fat and doesn't account for muscle mass. It's just one factor in assessing health.
-                    </p>`,
-                water: `<h3>💧 Hydration Guide</h3>
-                    <p><strong>Staying hydrated is essential for:</strong></p>
-                    <ul>
-                        <li>Regulating body temperature</li>
-                        <li>Maintaining joint health</li>
-                        <li>Transporting nutrients</li>
-                        <li>Supporting organ function</li>
-                    </ul>
-                    <p><strong>General Recommendations:</strong></p>
-                    <ul>
-                        <li>Adults: Approximately 8 glasses (2 liters) per day</li>
-                        <li>Increase during exercise or hot weather</li>
-                        <li>Listen to your body's thirst signals</li>
-                    </ul>
-                    <p><strong>Signs of Dehydration:</strong></p>
-                    <ul>
-                        <li>Dark urine</li>
-                        <li>Dry mouth</li>
-                        <li>Fatigue</li>
-                        <li>Headache</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #3b82f6;">
-                        💧 Tip: Carry a water bottle and set reminders to drink water!
-                    </p>`,
-                emergency: `<h3>🚨 EMERGENCY ALERT</h3>
-                    <p><strong>If this is a medical emergency, call 911 (or your local emergency number) IMMEDIATELY.</strong></p>
-                    <p><strong>While waiting for help:</strong></p>
-                    <ul>
-                        <li>Stay calm</li>
-                        <li>Do not leave the person alone</li>
-                        <li>Follow dispatcher instructions</li>
-                        <li>If trained, provide first aid</li>
-                    </ul>
-                    <p><strong>Emergency Signs:</strong></p>
-                    <ul>
-                        <li>Difficulty breathing</li>
-                        <li>Chest pain or pressure</li>
-                        <li>Severe bleeding</li>
-                        <li>Loss of consciousness</li>
-                        <li>Signs of stroke (FAST)</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-weight: bold;">
-                        I am an AI assistant and CANNOT provide emergency medical care. Please call emergency services immediately for any life-threatening situation.
-                    </p>`,
-                default: `<h3>🏥 Health Assistant</h3>
-                    <p>I can help with:</p>
-                    <ul>
-                        <li><strong>Symptom Information:</strong> Ask about headache, fatigue, sore throat, etc.</li>
-                        <li><strong>Health Conditions:</strong> Learn about common cold, flu, allergies, etc.</li>
-                        <li><strong>Wellness Tips:</strong> Nutrition, exercise, sleep, mental health</li>
-                        <li><strong>Calculators:</strong> BMI, water intake recommendations</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #666;">
-                        Try asking: "I have a headache" or "Give me sleep tips"
-                    </p>
-                    <p style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>Remember:</strong> For medical advice, diagnosis, or treatment, please consult a qualified healthcare professional.
-                    </p>`
+                welcome: `<h3>👋 Welcome!</h3><p>I'm your AI health information assistant. I can help with:</p><ul><li>General symptom information</li><li>Health condition overviews</li><li>Wellness and lifestyle tips</li><li>BMI and hydration calculations</li></ul><div class="info-box warning">⚠️ <strong>Remember:</strong> For medical advice, always consult a healthcare professional.</div>`,
+                headache: `<h3>🤕 Headache Information</h3><p><strong>Common Causes:</strong></p><ul><li>Tension and stress</li><li>Dehydration</li><li>Lack of sleep</li><li>Eye strain</li></ul><p><strong>General Care:</strong></p><ul><li>Rest in a quiet, dark room</li><li>Stay hydrated</li><li>Apply cold or warm compress</li></ul><div class="info-box warning">⚠️ See a doctor if: severe, sudden onset, with fever, or after head injury.</div>`,
+                fatigue: `<h3>😴 Fatigue Information</h3><p><strong>Common Causes:</strong></p><ul><li>Poor sleep quality</li><li>Stress and anxiety</li><li>Poor nutrition</li><li>Sedentary lifestyle</li></ul><p><strong>Tips:</strong></p><ul><li>Establish regular sleep schedule</li><li>Exercise regularly</li><li>Eat balanced meals</li><li>Stay hydrated</li></ul><div class="info-box warning">⚠️ See a doctor if fatigue lasts more than 2 weeks.</div>`,
+                cold: `<h3>🤧 Common Cold</h3><p><strong>Symptoms:</strong></p><ul><li>Runny nose, sneezing</li><li>Sore throat</li><li>Mild body aches</li><li>Low-grade fever</li></ul><p><strong>Care:</strong> Rest, fluids, and symptom management. Most colds resolve in 7-10 days.</p><div class="info-box info">ℹ️ Prevention: Wash hands frequently, avoid touching face.</div>`,
+                nutrition: `<h3>🥗 Healthy Eating Basics</h3><ul><li>Eat a variety of colorful fruits and vegetables</li><li>Choose whole grains over refined grains</li><li>Include lean proteins</li><li>Stay hydrated - aim for 8 glasses of water</li><li>Limit processed foods and added sugars</li><li>Practice portion control</li></ul><div class="info-box success">💚 Small, consistent changes lead to lasting improvements!</div>`,
+                sleep: `<h3>😴 Better Sleep Habits</h3><ul><li>Maintain consistent sleep and wake times</li><li>Create a relaxing bedtime routine</li><li>Keep bedroom cool, dark, and quiet</li><li>Avoid screens 1 hour before bed</li><li>Limit caffeine after noon</li><li>Exercise regularly but not too close to bedtime</li></ul><div class="info-box success">💤 Quality sleep is essential for overall health!</div>`,
+                bmi: `<h3>⚖️ BMI Calculator</h3><p><strong>BMI Categories:</strong></p><ul><li>Under 18.5: Underweight</li><li>18.5 - 24.9: Normal weight</li><li>25 - 29.9: Overweight</li><li>30+: Obese</li></ul><p>To calculate: Provide weight (kg) and height (cm).</p><div class="info-box info">ℹ️ BMI doesn't measure body fat directly and doesn't account for muscle mass.</div>`,
+                water: `<h3>💧 Hydration Guide</h3><p><strong>Benefits:</strong></p><ul><li>Regulates body temperature</li><li>Maintains joint health</li><li>Transports nutrients</li></ul><p><strong>Recommendation:</strong> ~8 glasses (2L) per day. Increase during exercise or hot weather.</p><div class="info-box success">💧 Tip: Carry a water bottle and set reminders!</div>`,
+                emergency: `<h3>🚨 EMERGENCY ALERT</h3><p><strong>If this is a medical emergency, call 911 immediately.</strong></p><p>Emergency signs: Difficulty breathing, chest pain, severe bleeding, loss of consciousness, signs of stroke.</p><div class="info-box warning"><strong>I am an AI assistant and CANNOT provide emergency medical care.</strong></div>`,
+                default: `<h3>🏥 Health Assistant</h3><p>I can help with symptom information, health conditions, wellness tips, and calculators.</p><p>Try asking about: headache, fatigue, nutrition, sleep, BMI, or hydration.</p><div class="info-box warning">⚠️ For medical advice, please consult a healthcare professional.</div>`
             },
             ko: {
-                welcome: `<h3>👋 환영합니다!</h3>
-                    <p>저는 AI 건강 정보 어시스턴트입니다. 다음을 도와드릴 수 있습니다:</p>
-                    <ul>
-                        <li>일반적인 증상 정보</li>
-                        <li>건강 상태 개요</li>
-                        <li>웰니스 및 라이프스타일 팁</li>
-                        <li>BMI 및 수분 섭취 계산</li>
-                        <li>일반적인 건강 위험 평가</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
-                        <strong>기억하세요:</strong> 의료 조언이 필요하시면 항상 의료 전문가와 상담하세요.
-                    </p>`,
-                headache: `<h3>🤕 두통 정보</h3>
-                    <p><strong>설명:</strong> 머리, 두피 또는 목 부위의 통증이나 불편감.</p>
-                    <p><strong>일반적인 원인:</strong></p>
-                    <ul>
-                        <li>긴장과 스트레스</li>
-                        <li>탈수</li>
-                        <li>수면 부족</li>
-                        <li>눈의 피로</li>
-                        <li>부비동 충혈</li>
-                    </ul>
-                    <p><strong>일반적인 가정 관리:</strong></p>
-                    <ul>
-                        <li>조용하고 어두운 방에서 휴식</li>
-                        <li>충분한 수분 섭취</li>
-                        <li>차갑거나 따뜻한 찜질</li>
-                        <li>이완 기법 연습</li>
-                    </ul>
-                    <p><strong>의사를 만나야 할 때:</strong></p>
-                    <ul>
-                        <li>심하거나 갑작스러운 발병</li>
-                        <li>발열이나 뻣뻣한 목을 동반한 두통</li>
-                        <li>머리 부상 후</li>
-                        <li>시력 변화와 함께</li>
-                    </ul>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>면책조항:</strong> 이것은 일반적인 정보일 뿐입니다. 개인화된 조언은 의료 제공자와 상담하세요.
-                    </p>`,
-                fatigue: `<h3>😴 피로 정보</h3>
-                    <p><strong>설명:</strong> 피곤함, 탈진 또는 에너지 부족의 느낌.</p>
-                    <p><strong>일반적인 원인:</strong></p>
-                    <ul>
-                        <li>수면의 질 저하</li>
-                        <li>스트레스와 불안</li>
-                        <li>영양 불균형</li>
-                        <li>앉아있는 생활방식</li>
-                        <li>탈수</li>
-                    </ul>
-                    <p><strong>일반적인 팁:</strong></p>
-                    <ul>
-                        <li>규칙적인 수면 스케줄 유지</li>
-                        <li>규칙적으로 운동</li>
-                        <li>균형 잡힌 식사</li>
-                        <li>충분한 수분 섭취</li>
-                        <li>카페인과 알코올 제한</li>
-                    </ul>
-                    <p><strong>의사를 만나야 할 때:</strong></p>
-                    <ul>
-                        <li>2주 이상 지속되는 피로</li>
-                        <li>설명할 수 없는 체중 감소와 함께</li>
-                        <li>호흡 곤란과 함께</li>
-                    </ul>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>면책조항:</strong> 이것은 일반적인 정보일 뿐입니다. 개인화된 조언은 의료 제공자와 상담하세요.
-                    </p>`,
-                cold: `<h3>🤧 감기</h3>
-                    <p><strong>개요:</strong> 상기도의 바이러스 감염.</p>
-                    <p><strong>일반적인 증상:</strong></p>
-                    <ul>
-                        <li>콧물</li>
-                        <li>재채기</li>
-                        <li>인후통</li>
-                        <li>기침</li>
-                        <li>가벼운 몸살</li>
-                        <li>미열</li>
-                    </ul>
-                    <p><strong>예방:</strong></p>
-                    <ul>
-                        <li>자주 손 씻기</li>
-                        <li>얼굴 만지지 않기</li>
-                        <li>아픈 사람과 거리두기</li>
-                        <li>충분한 수면</li>
-                    </ul>
-                    <p><strong>일반적인 관리:</strong> 휴식, 수분 섭취, 증상 관리. 대부분의 감기는 7-10일 내에 회복됩니다.</p>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>면책조항:</strong> 이것은 일반적인 정보일 뿐입니다. 증상이 지속되거나 악화되면 의료 제공자와 상담하세요.
-                    </p>`,
-                nutrition: `<h3>🥗 건강한 식사 기본</h3>
-                    <p>균형 잡힌 식단을 위한 기본 원칙:</p>
-                    <ul>
-                        <li>매일 다양한 색깔의 과일과 채소 섭취</li>
-                        <li>정제 곡물보다 통곡물 선택</li>
-                        <li>식사에 저지방 단백질 포함</li>
-                        <li>수분 유지 - 하루 8잔의 물 목표</li>
-                        <li>가공식품과 첨가당 제한</li>
-                        <li>적정량 섭취 연습</li>
-                        <li>아침 식사 거르지 않기</li>
-                        <li>미리 식사 계획하고 준비하기</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #10b981;">
-                        💚 기억하세요: 작고 일관된 변화가 지속적인 개선으로 이어집니다!
-                    </p>`,
-                sleep: `<h3>😴 더 나은 수면 습관</h3>
-                    <p>수면의 질을 향상시키는 팁:</p>
-                    <ul>
-                        <li>일정한 취침 및 기상 시간 유지</li>
-                        <li>편안한 취침 루틴 만들기</li>
-                        <li>침실을 시원하고 어둡고 조용하게 유지</li>
-                        <li>취침 1시간 전 스크린 피하기</li>
-                        <li>정오 이후 카페인 제한</li>
-                        <li>취침 시간 가까이 과식 피하기</li>
-                        <li>규칙적으로 운동하되 취침 시간과 너무 가깝지 않게</li>
-                        <li>이완 기법으로 스트레스 관리</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #10b981;">
-                        💤 양질의 수면은 전반적인 건강과 웰빙에 필수적입니다!
-                    </p>`,
-                bmi: `<h3>⚖️ BMI 계산기</h3>
-                    <p><strong>체질량지수(BMI)</strong>는 건강한 체중인지 여부를 나타낼 수 있는 검사 도구입니다.</p>
-                    <p><strong>BMI 범주:</strong></p>
-                    <ul>
-                        <li>18.5 미만: 저체중</li>
-                        <li>18.5 - 24.9: 정상 체중</li>
-                        <li>25 - 29.9: 과체중</li>
-                        <li>30 이상: 비만</li>
-                    </ul>
-                    <p><strong>계산하려면:</strong> 체중(kg)과 키(cm)를 알려주세요.</p>
-                    <p>예: "70kg, 175cm로 BMI 계산해주세요"</p>
-                    <p style="margin-top: 15px; padding: 10px; background: #e0f2fe; border-radius: 8px; font-size: 0.85rem;">
-                        ℹ️ <strong>참고:</strong> BMI는 체지방을 직접 측정하지 않으며 근육량을 고려하지 않습니다. 건강 평가의 한 요소일 뿐입니다.
-                    </p>`,
-                water: `<h3>💧 수분 섭취 가이드</h3>
-                    <p><strong>수분 유지는 다음에 필수적입니다:</strong></p>
-                    <ul>
-                        <li>체온 조절</li>
-                        <li>관절 건강 유지</li>
-                        <li>영양소 운반</li>
-                        <li>장기 기능 지원</li>
-                    </ul>
-                    <p><strong>일반 권장사항:</strong></p>
-                    <ul>
-                        <li>성인: 하루 약 8잔 (2리터)</li>
-                        <li>운동 중이나 더운 날씨에는 증가</li>
-                        <li>몸의 갈증 신호에 귀 기울이기</li>
-                    </ul>
-                    <p><strong>탈수 징후:</strong></p>
-                    <ul>
-                        <li>진한 색 소변</li>
-                        <li>입 마름</li>
-                        <li>피로</li>
-                        <li>두통</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #3b82f6;">
-                        💧 팁: 물병을 가지고 다니고 물 마시기 알림을 설정하세요!
-                    </p>`,
-                emergency: `<h3>🚨 응급 알림</h3>
-                    <p><strong>의료 응급 상황이면 즉시 119(또는 지역 응급 전화)에 전화하세요.</strong></p>
-                    <p><strong>도움을 기다리는 동안:</strong></p>
-                    <ul>
-                        <li>침착함 유지</li>
-                        <li>환자를 혼자 두지 않기</li>
-                        <li>상담원 지시 따르기</li>
-                        <li>훈련받은 경우 응급처치 제공</li>
-                    </ul>
-                    <p><strong>응급 징후:</strong></p>
-                    <ul>
-                        <li>호흡 곤란</li>
-                        <li>가슴 통증 또는 압박감</li>
-                        <li>심한 출혈</li>
-                        <li>의식 상실</li>
-                        <li>뇌졸중 징후 (FAST)</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-weight: bold;">
-                        저는 AI 어시스턴트이며 응급 의료 서비스를 제공할 수 없습니다. 생명을 위협하는 상황에서는 즉시 응급 서비스에 전화하세요.
-                    </p>`,
-                default: `<h3>🏥 건강 어시스턴트</h3>
-                    <p>다음을 도와드릴 수 있습니다:</p>
-                    <ul>
-                        <li><strong>증상 정보:</strong> 두통, 피로, 인후통 등에 대해 질문하세요.</li>
-                        <li><strong>건강 상태:</strong> 감기, 독감, 알레르기 등에 대해 알아보세요.</li>
-                        <li><strong>웰니스 팁:</strong> 영양, 운동, 수면, 정신 건강</li>
-                        <li><strong>계산기:</strong> BMI, 수분 섭취 권장량</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #666;">
-                        시도해보세요: "두통이 있어요" 또는 "수면 팁을 알려주세요"
-                    </p>
-                    <p style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>기억하세요:</strong> 의료 조언, 진단 또는 치료가 필요하시면 자격을 갖춘 의료 전문가와 상담하세요.
-                    </p>`
-            },
-            ja: {
-                welcome: `<h3>👋 ようこそ！</h3>
-                    <p>私はAI健康情報アシスタントです。以下をお手伝いできます：</p>
-                    <ul>
-                        <li>一般的な症状情報</li>
-                        <li>健康状態の概要</li>
-                        <li>ウェルネスとライフスタイルのヒント</li>
-                        <li>BMIと水分摂取量の計算</li>
-                        <li>一般的な健康リスク評価</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
-                        <strong>覚えておいてください：</strong>医療アドバイスについては、常に医療専門家に相談してください。
-                    </p>`,
-                headache: `<h3>🤕 頭痛の情報</h3>
-                    <p><strong>説明：</strong>頭、頭皮、または首の部分の痛みや不快感。</p>
-                    <p><strong>一般的な原因：</strong></p>
-                    <ul>
-                        <li>緊張とストレス</li>
-                        <li>脱水</li>
-                        <li>睡眠不足</li>
-                        <li>眼精疲労</li>
-                        <li>副鼻腔の充血</li>
-                    </ul>
-                    <p><strong>一般的な家庭ケア：</strong></p>
-                    <ul>
-                        <li>静かで暗い部屋で休む</li>
-                        <li>十分な水分補給</li>
-                        <li>冷たいまたは温かい湿布を当てる</li>
-                        <li>リラクゼーション技法を実践</li>
-                    </ul>
-                    <p><strong>医師に相談すべき時：</strong></p>
-                    <ul>
-                        <li>重度または突然の発症</li>
-                        <li>発熱や首のこわばりを伴う頭痛</li>
-                        <li>頭部外傷後</li>
-                        <li>視力の変化を伴う</li>
-                    </ul>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>免責事項：</strong>これは一般的な情報のみです。個人に合わせたアドバイスは医療提供者に相談してください。
-                    </p>`,
-                fatigue: `<h3>😴 疲労の情報</h3>
-                    <p><strong>説明：</strong>疲れ、消耗、またはエネルギー不足の感覚。</p>
-                    <p><strong>一般的な原因：</strong></p>
-                    <ul>
-                        <li>睡眠の質の低下</li>
-                        <li>ストレスと不安</li>
-                        <li>栄養不足</li>
-                        <li>座りがちな生活</li>
-                        <li>脱水</li>
-                    </ul>
-                    <p><strong>一般的なヒント：</strong></p>
-                    <ul>
-                        <li>規則的な睡眠スケジュールを確立</li>
-                        <li>定期的に運動</li>
-                        <li>バランスの取れた食事</li>
-                        <li>十分な水分補給</li>
-                        <li>カフェインとアルコールを制限</li>
-                    </ul>
-                    <p><strong>医師に相談すべき時：</strong></p>
-                    <ul>
-                        <li>2週間以上続く疲労</li>
-                        <li>説明のつかない体重減少を伴う</li>
-                        <li>息切れを伴う</li>
-                    </ul>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>免責事項：</strong>これは一般的な情報のみです。個人に合わせたアドバイスは医療提供者に相談してください。
-                    </p>`,
-                cold: `<h3>🤧 風邪</h3>
-                    <p><strong>概要：</strong>上気道のウイルス感染。</p>
-                    <p><strong>一般的な症状：</strong></p>
-                    <ul>
-                        <li>鼻水</li>
-                        <li>くしゃみ</li>
-                        <li>喉の痛み</li>
-                        <li>咳</li>
-                        <li>軽い体の痛み</li>
-                        <li>微熱</li>
-                    </ul>
-                    <p><strong>予防：</strong></p>
-                    <ul>
-                        <li>頻繁に手を洗う</li>
-                        <li>顔を触らない</li>
-                        <li>病気の人から離れる</li>
-                        <li>十分な睡眠を取る</li>
-                    </ul>
-                    <p><strong>一般的なケア：</strong>休息、水分補給、症状管理。ほとんどの風邪は7〜10日で回復します。</p>
-                    <p style="margin-top: 15px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>免責事項：</strong>これは一般的な情報のみです。症状が持続または悪化する場合は医療提供者に相談してください。
-                    </p>`,
-                nutrition: `<h3>🥗 健康的な食事の基本</h3>
-                    <p>バランスの取れた食事のための基本原則：</p>
-                    <ul>
-                        <li>毎日様々な色の果物と野菜を食べる</li>
-                        <li>精製穀物より全粒穀物を選ぶ</li>
-                        <li>食事に低脂肪タンパク質を含める</li>
-                        <li>水分補給 - 1日8杯の水を目指す</li>
-                        <li>加工食品と添加糖を制限</li>
-                        <li>適量を心がける</li>
-                        <li>朝食を抜かない</li>
-                        <li>食事を計画して事前に準備する</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #10b981;">
-                        💚 覚えておいてください：小さく一貫した変化が持続的な改善につながります！
-                    </p>`,
-                sleep: `<h3>😴 より良い睡眠習慣</h3>
-                    <p>睡眠の質を向上させるヒント：</p>
-                    <ul>
-                        <li>一定の就寝・起床時間を維持</li>
-                        <li>リラックスできる就寝ルーティンを作る</li>
-                        <li>寝室を涼しく、暗く、静かに保つ</li>
-                        <li>就寝1時間前はスクリーンを避ける</li>
-                        <li>正午以降のカフェインを制限</li>
-                        <li>就寝時間近くの大食を避ける</li>
-                        <li>定期的に運動するが就寝時間に近すぎないように</li>
-                        <li>リラクゼーション技法でストレスを管理</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #10b981;">
-                        💤 質の良い睡眠は全体的な健康とウェルビーイングに不可欠です！
-                    </p>`,
-                bmi: `<h3>⚖️ BMI計算機</h3>
-                    <p><strong>ボディマス指数（BMI）</strong>は、健康的な体重かどうかを示すスクリーニングツールです。</p>
-                    <p><strong>BMIカテゴリー：</strong></p>
-                    <ul>
-                        <li>18.5未満：低体重</li>
-                        <li>18.5 - 24.9：標準体重</li>
-                        <li>25 - 29.9：過体重</li>
-                        <li>30以上：肥満</li>
-                    </ul>
-                    <p><strong>計算するには：</strong>体重（kg）と身長（cm）を教えてください。</p>
-                    <p>例：「70kgと175cmでBMIを計算してください」</p>
-                    <p style="margin-top: 15px; padding: 10px; background: #e0f2fe; border-radius: 8px; font-size: 0.85rem;">
-                        ℹ️ <strong>注意：</strong>BMIは体脂肪を直接測定せず、筋肉量を考慮しません。健康評価の一要素に過ぎません。
-                    </p>`,
-                water: `<h3>💧 水分補給ガイド</h3>
-                    <p><strong>水分補給は以下に不可欠です：</strong></p>
-                    <ul>
-                        <li>体温調節</li>
-                        <li>関節の健康維持</li>
-                        <li>栄養素の運搬</li>
-                        <li>臓器機能のサポート</li>
-                    </ul>
-                    <p><strong>一般的な推奨事項：</strong></p>
-                    <ul>
-                        <li>成人：1日約8杯（2リットル）</li>
-                        <li>運動中や暑い天候では増やす</li>
-                        <li>体の渇きのサインに耳を傾ける</li>
-                    </ul>
-                    <p><strong>脱水の兆候：</strong></p>
-                    <ul>
-                        <li>濃い色の尿</li>
-                        <li>口の渇き</li>
-                        <li>疲労</li>
-                        <li>頭痛</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #3b82f6;">
-                        💧 ヒント：水筒を持ち歩き、水を飲むリマインダーを設定しましょう！
-                    </p>`,
-                emergency: `<h3>🚨 緊急警報</h3>
-                    <p><strong>医療緊急事態の場合は、すぐに119（または地域の緊急番号）に電話してください。</strong></p>
-                    <p><strong>助けを待っている間：</strong></p>
-                    <ul>
-                        <li>落ち着いて</li>
-                        <li>患者を一人にしない</li>
-                        <li>オペレーターの指示に従う</li>
-                        <li>訓練を受けている場合は応急処置を提供</li>
-                    </ul>
-                    <p><strong>緊急の兆候：</strong></p>
-                    <ul>
-                        <li>呼吸困難</li>
-                        <li>胸の痛みや圧迫感</li>
-                        <li>重度の出血</li>
-                        <li>意識喪失</li>
-                        <li>脳卒中の兆候（FAST）</li>
-                    </ul>
-                    <p style="margin-top: 15px; font-weight: bold;">
-                        私はAIアシスタントであり、緊急医療を提供することはできません。生命を脅かす状況では、すぐに緊急サービスに電話してください。
-                    </p>`,
-                default: `<h3>🏥 健康アシスタント</h3>
-                    <p>以下をお手伝いできます：</p>
-                    <ul>
-                        <li><strong>症状情報：</strong>頭痛、疲労、喉の痛みなどについて質問してください。</li>
-                        <li><strong>健康状態：</strong>風邪、インフルエンザ、アレルギーなどについて学びましょう。</li>
-                        <li><strong>ウェルネスのヒント：</strong>栄養、運動、睡眠、メンタルヘルス</li>
-                        <li><strong>計算機：</strong>BMI、水分摂取推奨量</li>
-                    </ul>
-                    <p style="margin-top: 15px; color: #666;">
-                        試してみてください：「頭痛がします」または「睡眠のヒントを教えてください」
-                    </p>
-                    <p style="margin-top: 10px; padding: 10px; background: #fff3cd; border-radius: 8px; font-size: 0.85rem;">
-                        ⚠️ <strong>覚えておいてください：</strong>医療アドバイス、診断、または治療については、資格のある医療専門家に相談してください。
-                    </p>`
+                welcome: `<h3>👋 환영합니다!</h3><p>저는 AI 건강 정보 어시스턴트입니다. 다음을 도와드릴 수 있습니다:</p><ul><li>일반적인 증상 정보</li><li>건강 상태 개요</li><li>웰니스 및 라이프스타일 팁</li><li>BMI 및 수분 섭취 계산</li></ul><div class="info-box warning">⚠️ <strong>기억하세요:</strong> 의료 조언은 항상 의료 전문가와 상담하세요.</div>`,
+                headache: `<h3>🤕 두통 정보</h3><p><strong>일반적인 원인:</strong></p><ul><li>긴장과 스트레스</li><li>탈수</li><li>수면 부족</li><li>눈의 피로</li></ul><p><strong>관리:</strong></p><ul><li>조용하고 어두운 방에서 휴식</li><li>충분한 수분 섭취</li><li>찜질</li></ul><div class="info-box warning">⚠️ 심하거나 갑작스러운 발병, 발열 동반 시 의사 상담 필요</div>`,
+                fatigue: `<h3>😴 피로 정보</h3><p><strong>일반적인 원인:</strong></p><ul><li>수면의 질 저하</li><li>스트레스와 불안</li><li>영양 불균형</li></ul><p><strong>팁:</strong></p><ul><li>규칙적인 수면</li><li>규칙적인 운동</li><li>균형 잡힌 식사</li></ul><div class="info-box warning">⚠️ 2주 이상 지속되면 의사 상담 필요</div>`,
+                default: `<h3>🏥 건강 어시스턴트</h3><p>증상 정보, 건강 상태, 웰니스 팁, 계산기를 도와드립니다.</p><div class="info-box warning">⚠️ 의료 조언은 의료 전문가와 상담하세요.</div>`
             }
         };
 
-        const emergencyKeywords = {
-            en: ['heart attack', 'stroke', "can't breathe", 'choking', 'severe bleeding', 'unconscious', 'overdose', 'suicide', 'chest pain', 'seizure'],
-            ko: ['심장마비', '뇌졸중', '숨을 못', '질식', '심한 출혈', '의식불명', '과다복용', '자살', '가슴 통증', '발작'],
-            ja: ['心臓発作', '脳卒中', '息ができ', '窒息', '大量出血', '意識不明', '過剰摂取', '自殺', '胸の痛み', '発作']
-        };
+        // Emergency keywords
+        const emergencyKeywords = ['heart attack', 'stroke', "can't breathe", 'choking', 'severe bleeding', 'unconscious', 'overdose', 'suicide', 'chest pain', 'seizure', '심장마비', '뇌졸중', '숨을 못', '질식', '心臓発作', '脳卒中', '心脏病', '中风'];
 
+        // Functions
         function setLanguage(lang) {
             currentLang = lang;
+            localStorage.setItem('healthcare-lang', lang);
             const t = i18n[lang];
 
-            // Update language buttons
             document.querySelectorAll('.lang-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.textContent === lang.toUpperCase());
+                btn.classList.toggle('active', btn.dataset.lang === lang);
             });
 
-            // Update header
             document.getElementById('title').textContent = t.title;
             document.getElementById('subtitle').textContent = t.subtitle;
-
-            // Update disclaimer
-            document.getElementById('disclaimer-title').textContent = t.disclaimerTitle;
-            document.getElementById('disclaimer-text').textContent = t.disclaimerText;
-
-            // Update chat
-            document.getElementById('chat-title').textContent = t.chatTitle;
+            document.getElementById('disclaimerTitle').textContent = t.disclaimerTitle;
+            document.getElementById('disclaimerText').textContent = t.disclaimerText;
+            document.getElementById('chatTitle').textContent = t.chatTitle;
             document.getElementById('messageInput').placeholder = t.placeholder;
             document.getElementById('sendBtn').textContent = t.send;
+            connectBtn.textContent = isConnected ? t.disconnect : t.connect;
+            statusText.textContent = isConnected ? t.connected : t.disconnected;
+            modeBadge.textContent = isConnected ? t.live : t.simulation;
 
-            // Update quick actions
-            const quickActionsDiv = document.getElementById('quick-actions');
+            document.getElementById('feature1Title').textContent = t.feature1Title;
+            document.getElementById('feature1Desc').textContent = t.feature1Desc;
+            document.getElementById('feature2Title').textContent = t.feature2Title;
+            document.getElementById('feature2Desc').textContent = t.feature2Desc;
+            document.getElementById('feature3Title').textContent = t.feature3Title;
+            document.getElementById('feature3Desc').textContent = t.feature3Desc;
+            document.getElementById('feature4Title').textContent = t.feature4Title;
+            document.getElementById('feature4Desc').textContent = t.feature4Desc;
+            document.getElementById('footerText').innerHTML = t.footerText;
+            document.getElementById('footerDemo').textContent = t.footerDemo;
+
+            const quickActionsDiv = document.getElementById('quickActions');
             quickActionsDiv.innerHTML = t.quickButtons.map(btn =>
                 `<button class="quick-btn ${btn.class}" onclick="sendQuickMessage('${btn.msg}')">${btn.text}</button>`
             ).join('');
 
-            // Update features
-            document.getElementById('feature1-title').textContent = t.feature1Title;
-            document.getElementById('feature1-desc').textContent = t.feature1Desc;
-            document.getElementById('feature2-title').textContent = t.feature2Title;
-            document.getElementById('feature2-desc').textContent = t.feature2Desc;
-            document.getElementById('feature3-title').textContent = t.feature3Title;
-            document.getElementById('feature3-desc').textContent = t.feature3Desc;
-            document.getElementById('feature4-title').textContent = t.feature4Title;
-            document.getElementById('feature4-desc').textContent = t.feature4Desc;
-
-            // Update footer
-            document.getElementById('footer-text').innerHTML = t.footerText;
-            document.getElementById('footer-demo').textContent = t.footerDemo;
-
-            // Refresh welcome message
             chatMessages.innerHTML = '';
-            addMessage(responses[lang].welcome, false);
+            const welcomeResponse = simulatedResponses[lang]?.welcome || simulatedResponses.en.welcome;
+            addMessage(welcomeResponse, false);
         }
 
-        function getResponse(message) {
-            const lower = message.toLowerCase();
-            const r = responses[currentLang];
-            const emergency = emergencyKeywords[currentLang];
+        async function connectToAPI() {
+            const url = apiUrlInput.value.trim();
 
-            // Check for emergency
-            if (emergency.some(keyword => lower.includes(keyword))) {
-                return { content: r.emergency, isEmergency: true };
-            }
-
-            // Check for symptoms
-            if (lower.includes('headache') || lower.includes('두통') || lower.includes('頭痛') || lower.includes('head pain')) {
-                return { content: r.headache };
-            }
-            if (lower.includes('tired') || lower.includes('fatigue') || lower.includes('exhausted') || lower.includes('피곤') || lower.includes('피로') || lower.includes('疲') || lower.includes('疲労')) {
-                return { content: r.fatigue };
+            if (isConnected) {
+                isConnected = false;
+                apiBaseUrl = '';
+                localStorage.removeItem('healthcare-api');
+                updateConnectionStatus();
+                return;
             }
 
-            // Check for conditions
-            if (lower.includes('cold') || lower.includes('flu') || lower.includes('감기') || lower.includes('風邪')) {
-                return { content: r.cold };
+            if (!url) {
+                alert('Please enter API URL');
+                return;
             }
 
-            // Check for wellness
-            if (lower.includes('nutrition') || lower.includes('diet') || lower.includes('eating') || lower.includes('영양') || lower.includes('栄養')) {
-                return { content: r.nutrition };
-            }
-            if (lower.includes('sleep') || lower.includes('insomnia') || lower.includes('수면') || lower.includes('잠') || lower.includes('睡眠')) {
-                return { content: r.sleep };
+            connectBtn.disabled = true;
+            connectBtn.textContent = i18n[currentLang].connecting;
+
+            try {
+                const response = await fetch(`${url}/api/health`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    isConnected = true;
+                    apiBaseUrl = url;
+                    localStorage.setItem('healthcare-api', url);
+                    sessionId = 'session_' + Date.now();
+                } else {
+                    throw new Error('API health check failed');
+                }
+            } catch (error) {
+                alert(`Connection failed: ${error.message}\nUsing simulation mode.`);
+                isConnected = false;
             }
 
-            // Check for calculators
-            if (lower.includes('bmi') || lower.includes('body mass')) {
-                return { content: r.bmi };
-            }
-            if (lower.includes('water') || lower.includes('hydration') || lower.includes('drink') || lower.includes('물') || lower.includes('수분') || lower.includes('水')) {
-                return { content: r.water };
-            }
+            connectBtn.disabled = false;
+            updateConnectionStatus();
+        }
 
-            return { content: r.default };
+        function updateConnectionStatus() {
+            const t = i18n[currentLang];
+            statusDot.className = 'status-dot ' + (isConnected ? 'connected' : 'disconnected');
+            statusText.textContent = isConnected ? t.connected : t.disconnected;
+            modeBadge.textContent = isConnected ? t.live : t.simulation;
+            connectBtn.textContent = isConnected ? t.disconnect : t.connect;
         }
 
         function addMessage(content, isUser = false, isEmergency = false) {
@@ -1135,10 +878,7 @@
             messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
 
             const contentDiv = document.createElement('div');
-            contentDiv.className = 'message-content';
-            if (isEmergency) {
-                contentDiv.className += ' emergency-alert';
-            }
+            contentDiv.className = 'message-content' + (isEmergency ? ' emergency-alert' : '');
 
             if (isUser) {
                 contentDiv.textContent = content;
@@ -1155,15 +895,7 @@
             const typingDiv = document.createElement('div');
             typingDiv.className = 'message bot';
             typingDiv.id = 'typing';
-            typingDiv.innerHTML = `
-                <div class="message-content">
-                    <div class="typing-indicator">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </div>
-                </div>
-            `;
+            typingDiv.innerHTML = `<div class="message-content"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
             chatMessages.appendChild(typingDiv);
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
@@ -1173,20 +905,79 @@
             if (typing) typing.remove();
         }
 
-        function sendMessage() {
+        function getSimulatedResponse(message) {
+            const lower = message.toLowerCase();
+            const responses = simulatedResponses[currentLang] || simulatedResponses.en;
+
+            if (emergencyKeywords.some(kw => lower.includes(kw.toLowerCase()))) {
+                return { content: responses.emergency || simulatedResponses.en.emergency, isEmergency: true };
+            }
+
+            if (lower.match(/headache|두통|頭痛|头痛|kopfschmerz|mal de tête|dolor de cabeza/i)) {
+                return { content: responses.headache || simulatedResponses.en.headache };
+            }
+            if (lower.match(/tired|fatigue|피곤|피로|疲|müde|fatigué|cansado/i)) {
+                return { content: responses.fatigue || simulatedResponses.en.fatigue };
+            }
+            if (lower.match(/cold|flu|감기|風邪|感冒|erkältung|rhume|resfriado/i)) {
+                return { content: responses.cold || simulatedResponses.en.cold };
+            }
+            if (lower.match(/nutrition|diet|영양|栄養|营养|ernährung|nutrition|nutrición/i)) {
+                return { content: responses.nutrition || simulatedResponses.en.nutrition };
+            }
+            if (lower.match(/sleep|insomnia|수면|잠|睡眠|schlaf|sommeil|sueño/i)) {
+                return { content: responses.sleep || simulatedResponses.en.sleep };
+            }
+            if (lower.match(/bmi|body mass/i)) {
+                return { content: responses.bmi || simulatedResponses.en.bmi };
+            }
+            if (lower.match(/water|hydration|물|수분|水|wasser|eau|agua/i)) {
+                return { content: responses.water || simulatedResponses.en.water };
+            }
+
+            return { content: responses.default || simulatedResponses.en.default };
+        }
+
+        async function sendMessage() {
             const message = messageInput.value.trim();
             if (!message) return;
 
             addMessage(message, true);
             messageInput.value = '';
-
             showTyping();
 
-            setTimeout(() => {
-                removeTyping();
-                const response = getResponse(message);
-                addMessage(response.content, false, response.isEmergency);
-            }, 1000 + Math.random() * 500);
+            if (isConnected && apiBaseUrl) {
+                try {
+                    const response = await fetch(`${apiBaseUrl}/api/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            session_id: sessionId,
+                            message: message
+                        })
+                    });
+
+                    removeTyping();
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const isEmergency = emergencyKeywords.some(kw => message.toLowerCase().includes(kw.toLowerCase()));
+                        addMessage(data.response, false, isEmergency);
+                    } else {
+                        throw new Error('API request failed');
+                    }
+                } catch (error) {
+                    removeTyping();
+                    const simResponse = getSimulatedResponse(message);
+                    addMessage(simResponse.content + `<div class="info-box warning">⚠️ API error - showing simulated response</div>`, false, simResponse.isEmergency);
+                }
+            } else {
+                setTimeout(() => {
+                    removeTyping();
+                    const simResponse = getSimulatedResponse(message);
+                    addMessage(simResponse.content, false, simResponse.isEmergency);
+                }, 800 + Math.random() * 500);
+            }
         }
 
         function sendQuickMessage(message) {
@@ -1195,13 +986,15 @@
         }
 
         function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
+            if (event.key === 'Enter') sendMessage();
         }
 
         // Initialize
-        setLanguage('en');
+        if (apiBaseUrl) {
+            apiUrlInput.value = apiBaseUrl;
+            connectToAPI();
+        }
+        setLanguage(currentLang);
     </script>
 </body>
 </html>
