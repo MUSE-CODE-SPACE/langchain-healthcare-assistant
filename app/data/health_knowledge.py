@@ -1,10 +1,13 @@
 """
-Health Knowledge Base - Medical information for the healthcare assistant
-Note: This is for educational purposes only. Always consult healthcare professionals.
+Health Knowledge Base - Medical information for the healthcare assistant.
+
+Note: This module is for educational purposes only. It does NOT replace
+professional medical advice, diagnosis, or treatment.
 """
 
-from dataclasses import dataclass, field
-from typing import List, Dict, Any, Optional
+from __future__ import annotations
+
+from dataclasses import dataclass
 from enum import Enum
 
 
@@ -18,54 +21,58 @@ class SymptomSeverity(Enum):
 @dataclass
 class Symptom:
     """Represents a health symptom."""
+
     id: str
     name: str
     description: str
-    common_causes: List[str]
-    when_to_see_doctor: List[str]
-    home_remedies: List[str]
-    severity_indicators: Dict[str, SymptomSeverity]
+    common_causes: list[str]
+    when_to_see_doctor: list[str]
+    home_remedies: list[str]
+    severity_indicators: dict[str, SymptomSeverity]
 
 
 @dataclass
 class Condition:
     """Represents a health condition."""
+
     id: str
     name: str
     description: str
-    common_symptoms: List[str]
-    risk_factors: List[str]
-    prevention: List[str]
+    common_symptoms: list[str]
+    risk_factors: list[str]
+    prevention: list[str]
     treatment_overview: str
-    when_to_seek_help: List[str]
+    when_to_seek_help: list[str]
 
 
 @dataclass
 class Medication:
     """General medication information."""
+
     id: str
     name: str
-    common_uses: List[str]
+    common_uses: list[str]
     general_dosage_info: str
-    common_side_effects: List[str]
-    warnings: List[str]
-    interactions: List[str]
+    common_side_effects: list[str]
+    warnings: list[str]
+    interactions: list[str]
 
 
 @dataclass
 class WellnessTip:
     """Health and wellness tips."""
+
     category: str
     title: str
     description: str
-    tips: List[str]
+    tips: list[str]
 
 
 # =============================================================================
 # SYMPTOMS DATABASE
 # =============================================================================
 
-SYMPTOMS_DB: Dict[str, Symptom] = {
+SYMPTOMS_DB: dict[str, Symptom] = {
     "headache": Symptom(
         id="headache",
         name="Headache",
@@ -77,7 +84,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Eye strain",
             "Sinus congestion",
             "Caffeine withdrawal",
-            "Hunger or skipping meals"
+            "Hunger or skipping meals",
         ],
         when_to_see_doctor=[
             "Severe or sudden onset headache",
@@ -85,7 +92,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Headache after head injury",
             "Headache that worsens over days",
             "Headache with vision changes",
-            "Frequent headaches affecting daily life"
+            "Frequent headaches affecting daily life",
         ],
         home_remedies=[
             "Rest in a quiet, dark room",
@@ -93,14 +100,14 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Apply cold or warm compress",
             "Practice relaxation techniques",
             "Gentle neck and shoulder stretches",
-            "Over-the-counter pain relievers (follow package directions)"
+            "Over-the-counter pain relievers (follow package directions)",
         ],
         severity_indicators={
             "mild_occasional": SymptomSeverity.MILD,
             "moderate_affecting_activities": SymptomSeverity.MODERATE,
             "severe_worst_ever": SymptomSeverity.SEVERE,
-            "with_neurological_symptoms": SymptomSeverity.EMERGENCY
-        }
+            "with_neurological_symptoms": SymptomSeverity.EMERGENCY,
+        },
     ),
     "fatigue": Symptom(
         id="fatigue",
@@ -114,14 +121,14 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Dehydration",
             "Anemia",
             "Thyroid issues",
-            "Depression"
+            "Depression",
         ],
         when_to_see_doctor=[
             "Fatigue lasting more than 2 weeks",
             "Fatigue with unexplained weight loss",
             "Fatigue with shortness of breath",
             "Fatigue affecting daily activities",
-            "Fatigue with fever or other symptoms"
+            "Fatigue with fever or other symptoms",
         ],
         home_remedies=[
             "Establish regular sleep schedule",
@@ -130,13 +137,13 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Stay hydrated",
             "Limit caffeine and alcohol",
             "Practice stress management",
-            "Take short breaks during work"
+            "Take short breaks during work",
         ],
         severity_indicators={
             "occasional_tiredness": SymptomSeverity.MILD,
             "daily_fatigue": SymptomSeverity.MODERATE,
-            "unable_to_function": SymptomSeverity.SEVERE
-        }
+            "unable_to_function": SymptomSeverity.SEVERE,
+        },
     ),
     "sore_throat": Symptom(
         id="sore_throat",
@@ -149,7 +156,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Dry air",
             "Smoking or secondhand smoke",
             "Voice strain",
-            "Acid reflux"
+            "Acid reflux",
         ],
         when_to_see_doctor=[
             "Severe pain or difficulty swallowing",
@@ -158,7 +165,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Swollen lymph nodes",
             "White patches on tonsils",
             "Difficulty breathing",
-            "Blood in saliva or phlegm"
+            "Blood in saliva or phlegm",
         ],
         home_remedies=[
             "Gargle with warm salt water",
@@ -167,14 +174,14 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Rest your voice",
             "Use a humidifier",
             "Honey in warm tea (adults only)",
-            "Over-the-counter pain relievers"
+            "Over-the-counter pain relievers",
         ],
         severity_indicators={
             "mild_discomfort": SymptomSeverity.MILD,
             "moderate_pain": SymptomSeverity.MODERATE,
             "severe_difficulty_swallowing": SymptomSeverity.SEVERE,
-            "difficulty_breathing": SymptomSeverity.EMERGENCY
-        }
+            "difficulty_breathing": SymptomSeverity.EMERGENCY,
+        },
     ),
     "back_pain": Symptom(
         id="back_pain",
@@ -187,7 +194,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Heavy lifting",
             "Lack of exercise",
             "Obesity",
-            "Age-related changes"
+            "Age-related changes",
         ],
         when_to_see_doctor=[
             "Pain lasting more than 6 weeks",
@@ -196,7 +203,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Pain after injury",
             "Pain with fever",
             "Difficulty with bladder or bowel control",
-            "Unexplained weight loss with pain"
+            "Unexplained weight loss with pain",
         ],
         home_remedies=[
             "Apply ice for first 48 hours, then heat",
@@ -205,14 +212,14 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Sleep on a supportive mattress",
             "Stretch regularly",
             "Strengthen core muscles",
-            "Over-the-counter pain relievers"
+            "Over-the-counter pain relievers",
         ],
         severity_indicators={
             "occasional_discomfort": SymptomSeverity.MILD,
             "daily_pain": SymptomSeverity.MODERATE,
             "severe_limiting_movement": SymptomSeverity.SEVERE,
-            "with_neurological_symptoms": SymptomSeverity.EMERGENCY
-        }
+            "with_neurological_symptoms": SymptomSeverity.EMERGENCY,
+        },
     ),
     "stomach_ache": Symptom(
         id="stomach_ache",
@@ -225,7 +232,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Stress and anxiety",
             "Overeating",
             "Constipation",
-            "Stomach flu (gastroenteritis)"
+            "Stomach flu (gastroenteritis)",
         ],
         when_to_see_doctor=[
             "Severe or persistent pain",
@@ -234,7 +241,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "High fever with abdominal pain",
             "Pain during pregnancy",
             "Unable to keep food down",
-            "Yellowing of skin or eyes"
+            "Yellowing of skin or eyes",
         ],
         home_remedies=[
             "Rest and avoid solid food temporarily",
@@ -243,14 +250,14 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Avoid trigger foods",
             "Try ginger or peppermint tea",
             "Apply warm compress",
-            "Avoid lying flat after eating"
+            "Avoid lying flat after eating",
         ],
         severity_indicators={
             "mild_discomfort": SymptomSeverity.MILD,
             "persistent_pain": SymptomSeverity.MODERATE,
             "severe_sharp_pain": SymptomSeverity.SEVERE,
-            "with_danger_signs": SymptomSeverity.EMERGENCY
-        }
+            "with_danger_signs": SymptomSeverity.EMERGENCY,
+        },
     ),
     "cough": Symptom(
         id="cough",
@@ -263,7 +270,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Post-nasal drip",
             "Acid reflux",
             "Smoking",
-            "Environmental irritants"
+            "Environmental irritants",
         ],
         when_to_see_doctor=[
             "Cough lasting more than 3 weeks",
@@ -272,7 +279,7 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Chest pain with coughing",
             "High fever",
             "Night sweats with cough",
-            "Unexplained weight loss"
+            "Unexplained weight loss",
         ],
         home_remedies=[
             "Stay hydrated",
@@ -281,79 +288,192 @@ SYMPTOMS_DB: Dict[str, Symptom] = {
             "Avoid irritants (smoke, dust)",
             "Elevate head while sleeping",
             "Try over-the-counter cough medicine",
-            "Gargle with salt water"
+            "Gargle with salt water",
         ],
         severity_indicators={
             "occasional_cough": SymptomSeverity.MILD,
             "persistent_cough": SymptomSeverity.MODERATE,
             "severe_with_other_symptoms": SymptomSeverity.SEVERE,
-            "difficulty_breathing": SymptomSeverity.EMERGENCY
-        }
-    )
+            "difficulty_breathing": SymptomSeverity.EMERGENCY,
+        },
+    ),
 }
 
 # =============================================================================
 # CONDITIONS DATABASE
 # =============================================================================
 
-CONDITIONS_DB: Dict[str, Condition] = {
+CONDITIONS_DB: dict[str, Condition] = {
     "common_cold": Condition(
         id="common_cold",
         name="Common Cold",
         description="A viral infection of the upper respiratory tract.",
-        common_symptoms=["Runny nose", "Sneezing", "Sore throat", "Cough", "Mild body aches", "Low-grade fever"],
-        risk_factors=["Exposure to infected individuals", "Weakened immune system", "Cold weather", "Stress", "Lack of sleep"],
-        prevention=["Wash hands frequently", "Avoid touching face", "Stay away from sick people", "Get adequate sleep", "Maintain healthy diet"],
+        common_symptoms=[
+            "Runny nose",
+            "Sneezing",
+            "Sore throat",
+            "Cough",
+            "Mild body aches",
+            "Low-grade fever",
+        ],
+        risk_factors=[
+            "Exposure to infected individuals",
+            "Weakened immune system",
+            "Cold weather",
+            "Stress",
+            "Lack of sleep",
+        ],
+        prevention=[
+            "Wash hands frequently",
+            "Avoid touching face",
+            "Stay away from sick people",
+            "Get adequate sleep",
+            "Maintain healthy diet",
+        ],
         treatment_overview="Rest, fluids, and symptom management. Most colds resolve in 7-10 days.",
-        when_to_seek_help=["Symptoms lasting more than 10 days", "High fever", "Severe symptoms", "Difficulty breathing"]
+        when_to_seek_help=[
+            "Symptoms lasting more than 10 days",
+            "High fever",
+            "Severe symptoms",
+            "Difficulty breathing",
+        ],
     ),
     "flu": Condition(
         id="flu",
         name="Influenza (Flu)",
         description="A contagious respiratory illness caused by influenza viruses.",
         common_symptoms=["High fever", "Severe body aches", "Fatigue", "Cough", "Headache", "Chills"],
-        risk_factors=["Not vaccinated", "Age (very young or elderly)", "Chronic conditions", "Weakened immune system"],
-        prevention=["Annual flu vaccination", "Hand hygiene", "Avoid close contact with sick people", "Cover coughs and sneezes"],
+        risk_factors=[
+            "Not vaccinated",
+            "Age (very young or elderly)",
+            "Chronic conditions",
+            "Weakened immune system",
+        ],
+        prevention=[
+            "Annual flu vaccination",
+            "Hand hygiene",
+            "Avoid close contact with sick people",
+            "Cover coughs and sneezes",
+        ],
         treatment_overview="Rest, fluids, and antiviral medications if prescribed early. Recovery typically takes 1-2 weeks.",
-        when_to_seek_help=["Difficulty breathing", "Chest pain", "Confusion", "Severe vomiting", "Symptoms that improve then worsen"]
+        when_to_seek_help=[
+            "Difficulty breathing",
+            "Chest pain",
+            "Confusion",
+            "Severe vomiting",
+            "Symptoms that improve then worsen",
+        ],
     ),
     "allergies": Condition(
         id="allergies",
         name="Allergies",
         description="Immune system reactions to substances that are usually harmless.",
-        common_symptoms=["Sneezing", "Runny nose", "Itchy eyes", "Skin rash", "Congestion", "Watery eyes"],
-        risk_factors=["Family history", "Having other allergies", "Asthma", "Environmental exposure"],
-        prevention=["Identify and avoid triggers", "Keep windows closed during high pollen", "Use air purifiers", "Shower after outdoor activities"],
+        common_symptoms=[
+            "Sneezing",
+            "Runny nose",
+            "Itchy eyes",
+            "Skin rash",
+            "Congestion",
+            "Watery eyes",
+        ],
+        risk_factors=[
+            "Family history",
+            "Having other allergies",
+            "Asthma",
+            "Environmental exposure",
+        ],
+        prevention=[
+            "Identify and avoid triggers",
+            "Keep windows closed during high pollen",
+            "Use air purifiers",
+            "Shower after outdoor activities",
+        ],
         treatment_overview="Avoid triggers, use antihistamines, nasal sprays, or immunotherapy as recommended.",
-        when_to_seek_help=["Severe reactions (anaphylaxis)", "Difficulty breathing", "Swelling of face or throat", "Symptoms not controlled by OTC medications"]
+        when_to_seek_help=[
+            "Severe reactions (anaphylaxis)",
+            "Difficulty breathing",
+            "Swelling of face or throat",
+            "Symptoms not controlled by OTC medications",
+        ],
     ),
     "hypertension": Condition(
         id="hypertension",
         name="High Blood Pressure (Hypertension)",
         description="A condition where the force of blood against artery walls is too high.",
-        common_symptoms=["Often no symptoms", "Headaches (in severe cases)", "Shortness of breath", "Nosebleeds"],
-        risk_factors=["Age", "Family history", "Obesity", "Sedentary lifestyle", "High sodium diet", "Excessive alcohol", "Stress"],
-        prevention=["Maintain healthy weight", "Exercise regularly", "Eat low-sodium diet", "Limit alcohol", "Manage stress", "Don't smoke"],
+        common_symptoms=[
+            "Often no symptoms",
+            "Headaches (in severe cases)",
+            "Shortness of breath",
+            "Nosebleeds",
+        ],
+        risk_factors=[
+            "Age",
+            "Family history",
+            "Obesity",
+            "Sedentary lifestyle",
+            "High sodium diet",
+            "Excessive alcohol",
+            "Stress",
+        ],
+        prevention=[
+            "Maintain healthy weight",
+            "Exercise regularly",
+            "Eat low-sodium diet",
+            "Limit alcohol",
+            "Manage stress",
+            "Don't smoke",
+        ],
         treatment_overview="Lifestyle modifications and medications as prescribed. Regular monitoring is important.",
-        when_to_seek_help=["Blood pressure over 180/120", "Severe headache", "Chest pain", "Vision problems", "Difficulty breathing"]
+        when_to_seek_help=[
+            "Blood pressure over 180/120",
+            "Severe headache",
+            "Chest pain",
+            "Vision problems",
+            "Difficulty breathing",
+        ],
     ),
     "diabetes_type2": Condition(
         id="diabetes_type2",
         name="Type 2 Diabetes",
         description="A chronic condition affecting how the body processes blood sugar.",
-        common_symptoms=["Increased thirst", "Frequent urination", "Fatigue", "Blurred vision", "Slow-healing wounds", "Unexplained weight loss"],
-        risk_factors=["Obesity", "Sedentary lifestyle", "Family history", "Age over 45", "History of gestational diabetes"],
-        prevention=["Maintain healthy weight", "Regular exercise", "Balanced diet", "Limit processed foods", "Regular health screenings"],
+        common_symptoms=[
+            "Increased thirst",
+            "Frequent urination",
+            "Fatigue",
+            "Blurred vision",
+            "Slow-healing wounds",
+            "Unexplained weight loss",
+        ],
+        risk_factors=[
+            "Obesity",
+            "Sedentary lifestyle",
+            "Family history",
+            "Age over 45",
+            "History of gestational diabetes",
+        ],
+        prevention=[
+            "Maintain healthy weight",
+            "Regular exercise",
+            "Balanced diet",
+            "Limit processed foods",
+            "Regular health screenings",
+        ],
         treatment_overview="Lifestyle changes, blood sugar monitoring, medications, and insulin if needed.",
-        when_to_seek_help=["Very high or low blood sugar", "Confusion", "Difficulty breathing", "Fruity breath odor", "Unconsciousness"]
-    )
+        when_to_seek_help=[
+            "Very high or low blood sugar",
+            "Confusion",
+            "Difficulty breathing",
+            "Fruity breath odor",
+            "Unconsciousness",
+        ],
+    ),
 }
 
 # =============================================================================
 # WELLNESS TIPS DATABASE
 # =============================================================================
 
-WELLNESS_TIPS: List[WellnessTip] = [
+WELLNESS_TIPS: list[WellnessTip] = [
     WellnessTip(
         category="nutrition",
         title="Healthy Eating Basics",
@@ -366,8 +486,8 @@ WELLNESS_TIPS: List[WellnessTip] = [
             "Limit processed foods and added sugars",
             "Practice portion control",
             "Don't skip breakfast",
-            "Plan and prepare meals ahead of time"
-        ]
+            "Plan and prepare meals ahead of time",
+        ],
     ),
     WellnessTip(
         category="exercise",
@@ -381,8 +501,8 @@ WELLNESS_TIPS: List[WellnessTip] = [
             "Start slowly and gradually increase intensity",
             "Include stretching and flexibility exercises",
             "Walk more - take stairs, park farther away",
-            "Consider a workout buddy for motivation"
-        ]
+            "Consider a workout buddy for motivation",
+        ],
     ),
     WellnessTip(
         category="sleep",
@@ -396,8 +516,8 @@ WELLNESS_TIPS: List[WellnessTip] = [
             "Limit caffeine after noon",
             "Avoid large meals close to bedtime",
             "Exercise regularly but not too close to bedtime",
-            "Manage stress with relaxation techniques"
-        ]
+            "Manage stress with relaxation techniques",
+        ],
     ),
     WellnessTip(
         category="mental_health",
@@ -411,8 +531,8 @@ WELLNESS_TIPS: List[WellnessTip] = [
             "Limit news and social media consumption",
             "Seek help when needed - it's a sign of strength",
             "Practice gratitude daily",
-            "Engage in hobbies and activities you enjoy"
-        ]
+            "Engage in hobbies and activities you enjoy",
+        ],
     ),
     WellnessTip(
         category="preventive_care",
@@ -426,46 +546,50 @@ WELLNESS_TIPS: List[WellnessTip] = [
             "Monitor your blood pressure",
             "Maintain a healthy weight",
             "Don't smoke and limit alcohol",
-            "Practice safe sun exposure"
-        ]
-    )
+            "Practice safe sun exposure",
+        ],
+    ),
 ]
 
 
-def get_symptom(symptom_id: str) -> Optional[Symptom]:
+def get_symptom(symptom_id: str) -> Symptom | None:
     """Get symptom by ID."""
     return SYMPTOMS_DB.get(symptom_id)
 
 
-def get_condition(condition_id: str) -> Optional[Condition]:
+def get_condition(condition_id: str) -> Condition | None:
     """Get condition by ID."""
     return CONDITIONS_DB.get(condition_id)
 
 
-def search_symptoms(query: str) -> List[Symptom]:
+def search_symptoms(query: str) -> list[Symptom]:
     """Search symptoms by keyword."""
     query_lower = query.lower()
     results = []
     for symptom in SYMPTOMS_DB.values():
-        if (query_lower in symptom.name.lower() or
-            query_lower in symptom.description.lower() or
-            any(query_lower in cause.lower() for cause in symptom.common_causes)):
+        if (
+            query_lower in symptom.name.lower()
+            or query_lower in symptom.description.lower()
+            or any(query_lower in cause.lower() for cause in symptom.common_causes)
+        ):
             results.append(symptom)
     return results
 
 
-def search_conditions(query: str) -> List[Condition]:
+def search_conditions(query: str) -> list[Condition]:
     """Search conditions by keyword."""
     query_lower = query.lower()
     results = []
     for condition in CONDITIONS_DB.values():
-        if (query_lower in condition.name.lower() or
-            query_lower in condition.description.lower() or
-            any(query_lower in symptom.lower() for symptom in condition.common_symptoms)):
+        if (
+            query_lower in condition.name.lower()
+            or query_lower in condition.description.lower()
+            or any(query_lower in symptom.lower() for symptom in condition.common_symptoms)
+        ):
             results.append(condition)
     return results
 
 
-def get_wellness_tips_by_category(category: str) -> List[WellnessTip]:
+def get_wellness_tips_by_category(category: str) -> list[WellnessTip]:
     """Get wellness tips by category."""
     return [tip for tip in WELLNESS_TIPS if tip.category == category]
