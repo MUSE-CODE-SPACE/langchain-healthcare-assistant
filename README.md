@@ -1,6 +1,6 @@
 # AI Healthcare Assistant
 
-LangChain 0.3 powered health *information* assistant with a Flask API.
+LangChain 1.x powered health *information* assistant with a Flask API.
 
 > **IMPORTANT MEDICAL DISCLAIMER**
 > This application is for **educational purposes only**. It is **NOT** a
@@ -15,7 +15,7 @@ LangChain 0.3 powered health *information* assistant with a Flask API.
 > 문제가 있다면 반드시 **자격을 갖춘 의료 전문가**와 상담하세요. 응급
 > 상황으로 의심되면 즉시 **119(국내) 또는 911**에 연락하십시오.
 
-[**Live demo**](https://yoon-k.github.io/langchain-healthcare-assistant/)
+[**Live demo**](https://MUSE-CODE-SPACE.github.io/langchain-healthcare-assistant/)
 
 ---
 
@@ -34,7 +34,7 @@ LangChain 0.3 powered health *information* assistant with a Flask API.
 ## Quick start
 
 ```bash
-git clone https://github.com/yoon-k/langchain-healthcare-assistant.git
+git clone https://github.com/MUSE-CODE-SPACE/langchain-healthcare-assistant.git
 cd langchain-healthcare-assistant
 
 # Option A — Makefile (recommended)
@@ -66,8 +66,8 @@ The agent picks a backend based on environment variables:
 
 | `LLM_PROVIDER` | Required keys                       | Default model                 | Behaviour |
 | -------------- | ----------------------------------- | ----------------------------- | --------- |
-| `anthropic`    | `ANTHROPIC_API_KEY`                 | `claude-haiku-4-5-20251001`   | Tool-calling agent (LCEL) |
-| `openai`       | `OPENAI_API_KEY`                    | `gpt-4o-mini`                 | Tool-calling agent (LCEL) |
+| `anthropic`    | `ANTHROPIC_API_KEY`                 | `claude-haiku-5-5`   | Tool-calling agent (`create_agent`) |
+| `openai`       | `OPENAI_API_KEY`                    | `gpt-5.4-mini`                 | Tool-calling agent (`create_agent`) |
 | `none`         | —                                   | —                             | Deterministic keyword router (offline) |
 | *(unset)*      | auto-detect from any key present    | as above                      | Falls back to `none` if no keys |
 
@@ -85,7 +85,7 @@ Copy `.env.example` to `.env` and fill in the values you need.
 ```
 langchain-healthcare-assistant/
 ├── app/
-│   ├── agents/health_agent.py      # LCEL tool-calling agent + keyword fallback
+│   ├── agents/health_agent.py      # `create_agent` tool-calling agent + keyword fallback
 │   ├── tools/health_tools.py       # 7 BaseTool implementations (Pydantic v2)
 │   ├── data/health_knowledge.py    # Dataclass-backed symptom/condition/wellness DB
 │   └── api.py                      # Flask blueprint
@@ -113,8 +113,8 @@ langchain-healthcare-assistant/
 - **Tools** (`langchain_core.tools.BaseTool`): `SymptomCheckerTool`,
   `ConditionInfoTool`, `WellnessTipsTool`, `BMICalculatorTool`,
   `WaterIntakeTool`, `HealthRiskAssessmentTool`, `EmergencyGuidanceTool`.
-- **Agent** (LangChain 0.3): `create_tool_calling_agent` + `AgentExecutor`,
-  with a `ChatPromptTemplate` system prompt that bakes in the medical
+- **Agent** (LangChain 1.x): `create_agent` (a LangGraph tool-calling loop)
+  with a system prompt that bakes in the medical
   disclaimer.
 - **Memory**: a windowed `collections.deque` (no deprecated
   `ConversationBufferWindowMemory`).
@@ -156,10 +156,10 @@ The image runs as a non-root user and serves the app with `gunicorn`
 
 ## Tech stack
 
-- LangChain 0.3 (langchain, langchain-core, langchain-community,
+- LangChain 1.x (langchain, langchain-core, langgraph,
   langchain-anthropic, langchain-openai)
-- Flask 3.1 + flask-cors 5
-- Pydantic 2.10
+- Flask 3.1 + flask-cors 6
+- Pydantic 2.11+
 - Python 3.12+
 
 ## License
