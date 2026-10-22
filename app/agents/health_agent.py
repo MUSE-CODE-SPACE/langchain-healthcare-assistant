@@ -1,5 +1,5 @@
 """
-Health Agent - LangChain 0.3 agent for the healthcare assistant.
+Health Agent - LangChain 1.x agent for the healthcare assistant.
 
 DISCLAIMER: This module powers an *informational* assistant. It is NOT a
 substitute for professional medical advice, diagnosis, or treatment.
@@ -26,6 +26,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
+from langchain_core.messages import AIMessage, HumanMessage
+
 from app.data.health_knowledge import (
     CONDITIONS_DB,
     SYMPTOMS_DB,
@@ -35,6 +37,21 @@ from app.data.health_knowledge import (
 from app.tools.health_tools import DISCLAIMER, get_health_tools
 
 logger = logging.getLogger(__name__)
+
+# Upper bound on model -> tool round-trips per user turn (mirrors the old
+# ``AgentExecutor(max_iterations=...)``). Each round-trip is two graph steps.
+MAX_AGENT_STEPS = 4
+
+
+def extract_final_text(result: Any) -> str:
+    """Return the text of the last assistant message in a ``create_agent`` result."""
+    messages = result.get("messages") if isinstance(result, dict) else None
+    if not messages:
+        return ""
+    last = messages[-1]
+    if not isinstance(last, AIMessage):
+        return ""
+    return str(last.text).strip()
 
 
 # Emergency keywords are checked BEFORE any LLM call. Keep this list tight
@@ -131,8 +148,8 @@ def _select_llm() -> tuple[str, Any | None]:
                 return "none", None
             from langchain_anthropic import ChatAnthropic
 
-            model = os.environ.get("ANTHROPIC_MODEL", "claude-haiku-4-5-20251001")
-            return "anthropic", ChatAnthropic(model=model, temperature=0.2, max_tokens=1024)
+            model = os.environ.get("ANTHROPIC_MODEL", "claude-haiku-5-5")
+            return "anthropic", ChatAnthropic(model=model, max_tokens=4096)
 
         if provider == "openai":
             if not has_openai:
@@ -140,8 +157,8 @@ def _select_llm() -> tuple[str, Any | None]:
                 return "none", None
             from langchain_openai import ChatOpenAI
 
-            model = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
-            return "openai", ChatOpenAI(model=model, temperature=0.2)
+            model = os.environ.get("OPENAI_MODEL", "gpt-5.4-mini")
+            return "openai", ChatOpenAI(model=model)
     except Exception as exc:  # pragma: no cover - defensive
         logger.warning("Failed to initialise LLM provider %s: %s; using keyword fallback.", provider, exc)
         return "none", None
@@ -223,26 +240,15 @@ class HealthAssistantAgent:
         self.recent_messages.append((role, content))
 
     def _build_executor(self) -> Any | None:
-        """Wire up a tool-calling agent + executor using LangChain 0.3 LCEL."""
+        """Construct a LangGraph tool-calling agent (LangChain 1.x ``create_agent``)."""
         try:
-            from langchain.agents import AgentExecutor, create_tool_calling_agent
-            from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+            from langchain.agents import create_agent
 
-            prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", self.SYSTEM_PROMPT),
-                    MessagesPlaceholder("chat_history", optional=True),
-                    ("human", "{input}"),
-                    MessagesPlaceholder("agent_scratchpad"),
-                ]
-            )
-            agent = create_tool_calling_agent(self.llm, self.tools, prompt)
-            return AgentExecutor(
-                agent=agent,
-                tools=self.tools,
-                verbose=self.verbose,
-                handle_parsing_errors=True,
-                max_iterations=4,
+            return create_agent(
+                self.llm,
+                self.tools,
+                system_prompt=self.SYSTEM_PROMPT,
+                debug=self.verbose,
             )
         except Exception as exc:  # pragma: no cover - defensive
             logger.warning("Could not build agent executor: %s; using keyword fallback.", exc)
@@ -253,10 +259,10 @@ class HealthAssistantAgent:
         try:
             history_msgs = self._chat_history_for_lcel()
             result = self._executor.invoke(
-                {"input": user_message, "chat_history": history_msgs}
+                {"messages": [*history_msgs, HumanMessage(content=user_message)]},
+                config={"recursion_limit": 2 * MAX_AGENT_STEPS + 1},
             )
-            answer = result.get("output") if isinstance(result, dict) else str(result)
-            answer = answer or ""
+            answer = extract_final_text(result)
             # Always append the disclaimer if the model omitted it.
             if "DISCLAIMER" not in answer and "disclaimer" not in answer.lower():
                 answer = f"{answer.rstrip()}\n\n---\n{DISCLAIMER}"
@@ -267,11 +273,6 @@ class HealthAssistantAgent:
 
     def _chat_history_for_lcel(self) -> list[Any]:
         """Convert the deque into LangChain message objects."""
-        try:
-            from langchain_core.messages import AIMessage, HumanMessage
-        except Exception:  # pragma: no cover
-            return []
-
         messages: list[Any] = []
         # Skip the just-appended user message (it goes into "input").
         for role, content in list(self.recent_messages)[:-1]:
